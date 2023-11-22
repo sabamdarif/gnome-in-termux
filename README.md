@@ -39,7 +39,7 @@
 
 |CORE|FULL|
 |--|--|
-|![img](image/demo-core-ubuntu.png)|![img](image/demo-full-ubuntu.png)|
+|![img](images/gnome-core-ubuntu.png)|![img](image/demo-full-ubuntu.png)|
 </details>
 
 3. **You have to note your VNC password !!**
