@@ -1,5 +1,5 @@
 
-<center><img src="./image/demo-gnome.png"></center>
+<center><img src="images/demo-gnome.png"></center>
 <p align="center"><b>Easily Install Gnome Desktop in Termux</b></p>
 
 <div align="center">
