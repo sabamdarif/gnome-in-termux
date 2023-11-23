@@ -30,7 +30,7 @@
    - `proot-distro login DISTRO-NAME`
    - `apt update`
    - `apt install wget -y`
-   - `wget `
+   - `wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop`
    - `chmod +x install-gnome-in-termux`
    - `./install-gnome-in-termux`
    - Now Select **CORE** Or **FULL** Which You Want
