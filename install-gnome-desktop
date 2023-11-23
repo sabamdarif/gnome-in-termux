@@ -281,6 +281,7 @@ banner
 EOF
         chmod +x $HOME/.vnc/xstartup
 		mkdir /$user/.vnc
+                mkdir /home/$user/.vnc
 		cp  $HOME/.vnc/xstartup /home/$user/.vnc/xstartup
 		chmod +x /home/$user/.vnc/xstartup
     fi
