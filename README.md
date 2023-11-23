@@ -31,8 +31,8 @@
    - `apt update`
    - `apt install wget -y`
    - `wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop`
-   - `chmod +x install-gnome-in-termux`
-   - `./install-gnome-in-termux`
+   - `chmod +x install-gnome-desktop`
+   - `./install-gnome-desktop`
    - Now Select **CORE** Or **FULL** Which You Want
 <details>
 <summary><b><code>DEMO IMAGES: </code></b></summary>
