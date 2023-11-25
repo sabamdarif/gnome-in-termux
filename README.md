@@ -28,11 +28,12 @@
    - `pkg install proot proot-distro pulseaudio -y`
    - `proot-distro install DISTRO-NAME`
    - `proot-distro login DISTRO-NAME`
-   - `apt update`
-   - `apt install wget -y`
-   - `wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop`
-   - `chmod +x install-gnome-desktop`
-   - `./install-gnome-desktop`
+   - Now copy pest this in the distro 👇
+  
+3. 
+   ```
+    apt update ; apt install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
+    ```
    - Now Select **CORE** Or **FULL** Which You Want
 <details>
 <summary><b><code>DEMO IMAGES: </code></b></summary>
@@ -42,16 +43,16 @@
 |![img](images/gnome-core-ubuntu.png)|![img](image/demo-full-ubuntu.png)|
 </details>
 
-3. **You have to note your VNC password !!**
-4. **Now Restart Termux And Login Into Your Distro**
-5. GNOME is now successfully installed. 👍
-6. Install VNC VIEWER Apk on your Device. [Google Play Store](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=en)
-7. Or, Install NetHunter KeX from [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
+4. **You have to note your VNC password !!**
+5. **Now Restart Termux And Login Into Your Distro**
+6. GNOME is now successfully installed. 👍
+7. Install VNC VIEWER Apk on your Device. [Google Play Store](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=en)
+8. Or, Install NetHunter KeX from [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
 
-8. Open VNC VIEWER & Click on + Button & Enter the Address `localhost:1` & Name anything you like
-9. Set the Picture Quality to High for better Quality
-10. Click on Connect & Input the Password
-11. Enjoy :smile:
+9. Open VNC VIEWER & Click on + Button & Enter the Address `localhost:1` & Name anything you like
+10. Set the Picture Quality to High for better Quality
+11. Click on Connect & Input the Password
+12. Enjoy :smile:
 
 ### NOTE:
 
