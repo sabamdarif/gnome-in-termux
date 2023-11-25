@@ -268,23 +268,26 @@ fi
 function vnc() {
 banner
    echo -e "${R} [${W}-${R}]${C} Setting up VNC Server..."${W}
-  if [[ ! -d "$HOME/.vnc" ]]; then
-        mkdir -p "$HOME/.vnc"
-    fi
-    if [[ -e "$HOME/.vnc/xstartup" ]]; then
-        rm $HOME/.vnc/xstartup
-        touch $HOME/.vnc/xstartup
-        cat << EOF >> $HOME/.vnc/xstartup
-        export XDG_CURRENT_DESKTOP="GNOME"
-        service dbus start
-        gnome-shell --x11
+ if [[ ! -d "$HOME/.vnc" ]]; then
+    mkdir -p "$HOME/.vnc"
+fi
+
+if [[ -e "$HOME/.vnc/xstartup" ]]; then
+    rm "$HOME/.vnc/xstartup"
+fi
+
+touch "$HOME/.vnc/xstartup"
+cat << EOF >> "$HOME/.vnc/xstartup"
+export XDG_CURRENT_DESKTOP="GNOME"
+service dbus start
+gnome-shell --x11
 EOF
-        chmod +x $HOME/.vnc/xstartup
-		mkdir /$user/.vnc
-                mkdir /home/$user/.vnc
-		cp  $HOME/.vnc/xstartup /home/$user/.vnc/xstartup
-		chmod +x /home/$user/.vnc/xstartup
-    fi
+
+chmod +x "$HOME/.vnc/xstartup"
+
+mkdir -p "/home/$user/.vnc"
+cp -r "$HOME/.vnc/xstartup" "/home/$user/.vnc/xstartup"
+chmod +x "/home/$user/.vnc/xstartup"
    if [[ -e "/usr/local/bin/vncstart" ]]; then
         rm -rf /usr/local/bin/vncstart 
     fi
