@@ -67,6 +67,8 @@ for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
 
 ### ISSUES:
 - **1:-** *Debian Based Distro Supported Only*
+- **2:-** *Flatpack don't work*
+- **3:-** *Some extension don't work*
 
 ### If you like our work then dont forget to give a Star :)
 
