@@ -24,14 +24,14 @@
 2. Install [Termux](https://termux.com) apk from [HERE](https://f-droid.org/repo/com.termux_118.apk)
 3. Secondly Install Any Debian Based Proot-distro & pulseaudio For Audio Working
 
-   - `pkg update -y ; pkg install proot-distro wget pulseaudio -y`
+   - `pkg update -y ; pkg install proot-distro pulseaudio -y`
    - `proot-distro install DISTRO-NAME`
    - `proot-distro login DISTRO-NAME`
    - Now copy pest this in the distro 👇
   
 4. 
    ```
-   wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
+   apt update -y ; apt install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
     ```
    - Now Select **CORE** Or **FULL** Which You Want
        <details>
