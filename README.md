@@ -27,13 +27,13 @@
    - `pkg update -y ; pkg install proot-distro pulseaudio -y`
    - `proot-distro install DISTRO-NAME`
    - `proot-distro login DISTRO-NAME`
-   - Now copy pest this in the distro 👇
+   - Now copy pest this in the distro shell 👇
   
 4. 
    ```
    apt update -y ; apt install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
     ```
-   - Now Select **CORE** Or **FULL** Which You Want
+   - Now Select **CORE** Or **FULL(recomended)** Which You Want
        <details>
        <summary><b><code>DEMO IMAGES: </code></b></summary>
 
