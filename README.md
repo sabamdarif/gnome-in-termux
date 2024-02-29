@@ -27,13 +27,13 @@
    - `pkg update -y ; pkg install proot-distro pulseaudio -y`
    - `proot-distro install DISTRO-NAME`
    - `proot-distro login DISTRO-NAME`
-   - Now copy pest this in the distro shell 👇
+   - Now copy pest this in the distro terminal 👇
   
 4. 
    ```
    apt update -y ; apt install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
     ```
-   - Now Select **CORE** Or **FULL(recomended)** Which You Want
+   - Now Select **CORE** Or **FULL(recomended)**
        <details>
        <summary><b><code>DEMO IMAGES: </code></b></summary>
 
@@ -52,13 +52,17 @@ Or NetHunter KeX from [Nethunter Store](https://store.nethunter.com/en/packages/
 ### NOTE:
 
 - **Type `DISTRO-NAME` to login into DISTRO CLI.**
-- **Type `vncstart` to run Vncserver**
-- **Type `vncstop` to stop Vncserver**
+- **Type `DISTRO-NAME -r` to login as root user**
+- **Type `vncstart` OR From Termux Type `DISTRO-NAME -vncstart` to run Vncserver**
+- **Type `vncstop` OR From Termux Type `DISTRO-NAME -vncstart` to stop Vncserver**
 - **Type `vncstop -f` to stop Vncserver forcefully**
+- **Type `DISTRO-NAME -remove` to remove the distro**
+
+**Like If You Install Debian So Just Type `debian -r / debian -vncstart / debian -remove`**
 
 ### Warning: 
 - *In future if you upgarde the system the desktop will fail to launch.*
-## FIX:
+### Fix:
 - **First run the below command then login again**
 ```
 for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
