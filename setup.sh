@@ -29,11 +29,12 @@ questions() {
 	echo
     echo "${Y}2. Kali"${W}
 	echo
-	read -p "${Y}select a distro"${W} answer_distro
+	read -p "${Y}select a distro: "${W} answer_distro
 	echo
 }
 
 basic_task() {
+    banner
     echo "${G} Updating Termux... "${W}
     pkg update -y
     clear
@@ -51,6 +52,7 @@ basic_task() {
 }
 
 install_distro() {
+    banner
     if [[ ${answer_distro} == "1" ]]; then
         proot-distro install debian
     elif [[ ${answer_distro} == "2" ]]; then
@@ -66,7 +68,8 @@ install_distro() {
 }
 
 setup_installer() {
-    distro_path = /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs
+    banner
+    distro_path="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs"
     echo "${G} Setup Installer... "${W}
     cd ~
     wget -O gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
@@ -79,6 +82,9 @@ setup_installer() {
     elif [[ ${answer_distro} == "3" ]]; then
         mv gnome-installer.sh $distro_path/kali/root
         proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
+    else 
+        mv gnome-installer.sh $distro_path/debian/root
+        proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     fi
 }
 
