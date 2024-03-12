@@ -29,7 +29,7 @@ function check_root(){
 function questions() {
 	banner
 	echo 
-	echo "${G}Installing Gnome Desktop..."${W}
+	echo "${G}Select the Gnome Desktop type"${W}
 	echo
 	echo "${Y}1. Full (~3.5Gb | Recomended)"${W}
 	echo
@@ -39,7 +39,7 @@ function questions() {
 	echo
 	banner
 	echo 
-	echo "${G}Select which browser do you want."${W}
+	echo "${G}Select browser you want to install"${W}
 	echo
 	echo "${Y}1. firefox"${W}
 	echo
@@ -55,21 +55,26 @@ function questions() {
 	echo
 }
 
+function update_sys() {
+	banner
+	echo "${G}Updating System..."
+	apt update && apt-get update 
+}
 function login() {
+	banner
 	if [ -f /etc/os-release ]; then
     . /etc/os-release
 	if [[ -e "/data/data/com.termux/files/usr/bin/$ID" ]]; then
         rm -rf /data/data/com.termux/files/usr/bin/$ID
     fi
 	fi
-	read -p "${Y}Do you want to add a normal user account (y/n) "${w} useradd_answer
+	read -p "${Y}Do you want to add a normal user account (y/n) ${R}(not recomended) " ${w} useradd_answer
 	echo
 	if [ "$useradd_answer" = "y" ]; then
 	read -p "${G}Input username [Lowercase]:"${W} user_name
 	read -p "${G}Input Password :"${W} pass
 	useradd -m -s $(which bash) ${user_name}
     echo "${user_name}:${pass}" | chpasswd
-	apt update
 	apt install sudo -y
 	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
 	    cat <<EOF > "/data/data/com.termux/files/usr/bin/$ID"
@@ -80,15 +85,27 @@ elif [ "\$1" = "-remove" ]; then
 	sudo rm /data/data/com.termux/files/home/.sound
 	rm \$PREFIX/bin/$ID
 elif [ "\$1" = "-vncstart" ]; then
-    proot-distro login $ID -- /bin/sh -c 'vncstart'
+    proot-distro login --user "$user_name" $ID -- /bin/sh -c 'vncstart'
 elif [ "\$1" = "-vncstop" ]; then
-    proot-distro login $ID -- /bin/sh -c 'vncstop'
+    proot-distro login --user "$user_name" $ID -- /bin/sh -c 'vncstop'
 else
-    proot-distro login --user "$user" $ID
+    proot-distro login --user "$user_name" $ID
 fi
 EOF
 else
-	echo "proot-distro login $ID" > /data/data/com.termux/files/usr/bin/$ID
+ cat <<EOF > "/data/data/com.termux/files/usr/bin/$ID"
+ if [ "\$1" = "-vncstart" ]; then
+    proot-distro login $ID -- /bin/sh -c 'vncstart'
+elif [ "\$1" = "-vncstop" ]; then
+    proot-distro login $ID -- /bin/sh -c 'vncstop'
+elif [ "\$1" = "-remove" ]; then
+    proot-distro remove $ID
+	sudo rm /data/data/com.termux/files/home/.sound
+	rm \$PREFIX/bin/$ID
+else
+    proot-distro login $ID
+fi
+EOF
     fi
     chmod +x /data/data/com.termux/files/usr/bin/$ID 
     clear
@@ -97,27 +114,16 @@ else
 function vlc_installer() {
 	banner
 if [ "$vlc_answer" == "y" ]; then
-	echo "${Y}Checking if vlc is available or not"${W}
-	if [[ $(type -P vlc) ]]; then
-		echo "${G}vlc is already. Installed"${W}
-	else
-		echo "${G}vlc  is not installed. Installing vlc.."${W}
-		echo
-		sleep 1
-		sudo apt update && sudo apt install vlc -y
-	fi
+	echo "${G}Installing vlc.."${W}
+		apt install vlc -y
 else
-    echo "${C}Canceling...."${W}
-    sleep 1.2
+    echo "${C}Canceling Vlc Installation...."${W}
+    sleep 1.5
 fi
 }
 
 function install_chromium() {
 	banner
-    if [[ $(type -P chromium) ]]; then
-	echo -e "${R} [${W}-${R}]${C} Chromium is already installed.."${W}
-	sleep 0.5
-	else
 	echo -e "${R} [${W}-${R}]${C} installing chromium..."${W}
 	if ["ID" == "ubuntu"]; then 
 	apt purge chromium* chromium-browser* snapd -y
@@ -133,7 +139,6 @@ function install_chromium() {
 	else
 	apt install chromium -y
 	fi
-	fi
     sed -i 's/chromium %U/chromium --no-sandbox %U/g' /usr/share/applications/chromium.desktop
 }
 
@@ -142,24 +147,15 @@ function firefox_install() {
 		banner
 		sleep 1
 		clear
-        echo "${Y} Checking if  Firefox browser installed already.."
+        echo "${Y} Installing Firefox..."${W}
 		echo
 		echo
-		if [[ $(type -P firefox) ]]; then
-			echo "${G} Firefox is already installed.."${W}
-			sleep .5
-			clear
-		else
-			echo "${C} Firefox not found.Installing now.."${W}
-			echo
-			 apt update
-			if ["$ID" == "ubuntu"]; then 
+			if ["$ID" == "ubuntu"]; then
 			wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/patch/firefox.sh
 			bash firefox.sh
 			rm firefox.sh
 			else
 			apt install firefox-esr -y
-		fi
 		fi
 }
 
@@ -199,6 +195,7 @@ function install_gnome_core() {
 	echo
 	dpkg --configure -a
 	apt-get install gnome-shell gnome-terminal gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
+	clear
 }
 
 function install_gnome_full() {
@@ -211,10 +208,15 @@ function install_gnome_full() {
     elif [ "${ID}" == "kali" ]; then
 	    dpkg --configure -a
         apt-get install kali-desktop-gnome gnome-software gnome-shell-extension-manager -y
+	elif [ "${ID}" == "debian" ]; then
+	apt install gnome -y
     else
+	echo "${G}Installing Gnome Core First"${W}
+	sleep 1
         install_gnome_core
         apt-get install gnome -y
     fi
+	clear
 }
 function package() {
 	banner
@@ -222,7 +224,7 @@ function package() {
     apt update
      apt --fix-broken install -y
 	 dpkg --configure -a
-    packs=(nano gedit gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11 )
+    packs=(nano wget gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11 )
     for pack in "${packs[@]}"; do
         type -p "$pack" &>/dev/null || {
             echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}
@@ -315,18 +317,77 @@ function add_sound() {
     source /etc/profile
 }
 
+function check_firefox() {
+    echo "${Y}Checking if Firefox is installed or not...${W}"
+    if ! type -p "firefox" &>/dev/null; then
+        sleep 2
+        echo "${R}Firefox not installed...${W}"
+        firefox_install
+    else
+        echo "${G}Firefox is already installed.${W}"
+    fi
+}
+
+function check_chromium() {
+    echo "${Y}Checking if Chromium is installed or not...${W}"
+    if ! type -p "chromium" &>/dev/null; then
+        sleep 2
+        echo "${R}Chromium is not installed...${W}"
+        install_chromium
+    else
+        echo "${G}Chromium is already installed.${W}"
+    fi
+}
+
+function check_install() {
+    echo "${Y}Checking if everything is installed or not...${W}"
+    sleep 1
+    # Desktop check
+    echo "${Y}Checking if GNOME installed...${W}"
+    if ! type -p "gnome-shell" &>/dev/null; then
+	sleep 2
+        echo "${R}GNOME Desktop is not installed perfectly...${W}"
+		echo "${G}Fixing ..."${W}
+        sleep 2
+        install_desktop
+    else
+        echo "${G}GNOME Desktop is Installed Successfully...${W}"
+        sleep 2
+    fi
+    # Browser check
+    if [[ "${answer_browser}" == "1" ]]; then
+        check_firefox
+    elif [[ "${answer_browser}" == "2" ]]; then
+        check_chromium
+    elif [[ "${answer_browser}" == "3" ]]; then
+        check_firefox
+        check_chromium
+    else
+        check_firefox
+    fi
+    # VLC check
+    if [[ "${vlc_answer}" == "y" ]]; then
+        echo "${Y}Checking if VLC is installed or not...${W}"
+        if ! type -p "vlc" &>/dev/null; then
+            sleep 2
+            echo "${R}VLC is not installed, installing now...${W}"
+            apt install vlc -y
+        fi
+    fi
+}
+
 function note() {
 banner
     echo -e "${G} Successfully Installed !${W}"
-    sleep 1
+    sleep 2
 	echo
     echo -e "${G}Now Restart Termux First And Login Into $ID "${W}
 	echo
     echo -e "${G}Type ${C}$ID${G} to login into $ID "${W}
 	echo
-    echo -e "${G}Type ${C}vncstart${G} to run Vncserver."${W}
+    echo -e "${G}Type ${C}vncstart / $ID -vncstart ${G} to run Vncserver."${W}
 	echo
-    echo -e "${G}Type ${C}vncstop${G} to stop Vncserver."${W}
+    echo -e "${G}Type ${C}vncstop / $ID -vncstop ${G} to stop Vncserver."${W}
     echo
     echo -e "${C}Install VNC VIEWER or Nethunter Kex on your Device."${W}
     echo
@@ -338,7 +399,7 @@ banner
     echo
 	if [ "$useradd_answer" == "y" ]; then
 	echo -e "${R} If you have problem while running gnome as normal user , just use it as root"${W}
-	echo -e "${G} Use command ${C}$ID -r ,${G}To login as root user"
+	echo -e "${G} Use command ${C}$ID -r ,${G}To login as root user"${W}
 	fi
     echo -e "${C}Enjoy"${W}
     echo
@@ -346,12 +407,14 @@ banner
 }
 
 check_root
+update_sys
 login
 questions
-install_desktop
 package
+install_desktop
 browser_installer
 vlc_installer
 vnc
 add_sound
+check_install
 note

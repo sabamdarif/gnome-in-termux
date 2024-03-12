@@ -2,6 +2,7 @@
 
 [[ $(command -v snap) ]] && snap remove firefox
 PREFFILE="/etc/apt/preferences.d/mozilla-firefox"
+apt purge firefox* -y
 
 print_key() {
     cat <<-EOF

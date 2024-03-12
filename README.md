@@ -22,16 +22,10 @@
 ### Installation:
 1. If you are using android 12 or higher then first disable phantom process killer [Tutorial](https://termux.xyz/how-to-fix-termux-error-process-completed-signal-9-press-enter/)
 2. Install [Termux](https://termux.com) apk from [HERE](https://f-droid.org/repo/com.termux_118.apk)
-3. Secondly Install Any Debian Based Proot-distro & pulseaudio For Audio Working
-
-   - `pkg update -y ; pkg install proot-distro pulseaudio -y`
-   - `proot-distro install DISTRO-NAME`
-   - `proot-distro login DISTRO-NAME`
-   - Now copy pest this in the distro terminal 👇
-  
+3. Now copy pest this in termux 👇
 4. 
    ```
-   apt update -y ; apt install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop ; chmod +x install-gnome-desktop ; ./install-gnome-desktop 
+   pkg update -y ; pkg install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/setup.sh ; bash setup.sh 
     ```
    - Now Select **CORE** Or **FULL(recomended)**
        <details>
@@ -75,4 +69,3 @@ for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
 - **3:-** *Some extension don't work*
 
 ### If you like our work then dont forget to give a Star :)
-
