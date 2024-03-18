@@ -8,7 +8,6 @@ C="$(printf '\033[1;36m')"
 
 function banner() {
     clear
-	
 printf "\033[33m╭━━━╮╱╱╱╱╱╱╱╱╱╱╱╱╭━━╮╱╱╱╭━━━━╮\033[0m\n"
 printf "\033[33m┃╭━╮┃╱╱╱╱╱╱╱╱╱╱╱╱╰┫┣╯╱╱╱┃╭╮╭╮┃\033[0m\n"
 printf "\033[33m┃┃╱╰╋━╮╭━━┳╮╭┳━━╮╱┃┃╭━╮╱╰╯┃┃┣┻━┳━┳╮╭┳╮╭┳╮╭╮\033[0m\n"
@@ -31,12 +30,11 @@ function questions() {
 	echo 
 	echo "${G}Select the Gnome Desktop type"${W}
 	echo
-	echo "${Y}1. Full (~3.5Gb | Recomended)"${W}
+	echo "${Y}1. Full (~3.5Gb of space)"${W}
 	echo
 	echo "${Y}2. Core (~1.5GB of space)"${W}
 	echo
 	read -p "${Y}select an option (Default 1): "${W} answer_desktop
-	echo
 	banner
 	echo 
 	echo "${G}Select browser you want to install"${W}
@@ -48,31 +46,31 @@ function questions() {
 	echo "${Y}3. firefox & chromium (both)"${W}
 	echo
 	read -p "${Y}select an option (Default 1): "${W} answer_browser
-	echo
 	banner
-	echo
+	read -p "${Y}Do you want to add a normal user account (y/n) "${w} useradd_answer
+	banner
 	read -p "${Y}Do you want to install VLC (y/n) "${w} vlc_answer
-	echo
 }
 
-function update_sys() {
-	banner
-	echo "${G}Updating System..."
-	apt update && apt-get update 
-}
-function login() {
-	banner
+function get_sys_info() {
 	if [ -f /etc/os-release ]; then
     . /etc/os-release
 	if [[ -e "/data/data/com.termux/files/usr/bin/$ID" ]]; then
         rm -rf /data/data/com.termux/files/usr/bin/$ID
     fi
 	fi
-	read -p "${Y}Do you want to add a normal user account (y/n) ${R}(not recomended) " ${w} useradd_answer
-	echo
+}
+
+function update_sys() {
+	banner
+	echo "${G}Updating ${ID}'s System..."
+	apt update && apt-get update 
+}
+function login() {
+	banner
 	if [ "$useradd_answer" = "y" ]; then
-	read -p "${G}Input username [Lowercase]:"${W} user_name
-	read -p "${G}Input Password :"${W} pass
+	read -p "${G}Input username [Lowercase]: "${W} user_name
+	read -p "${G}Input Password: "${W} pass
 	useradd -m -s $(which bash) ${user_name}
     echo "${user_name}:${pass}" | chpasswd
 	apt install sudo -y
@@ -82,7 +80,7 @@ if [ "\$1" = "-r" ]; then
     proot-distro login $ID
 elif [ "\$1" = "-remove" ]; then
     proot-distro remove $ID
-	sudo rm /data/data/com.termux/files/home/.sound
+	sudo rm /data/data/com.termux/files/home/.${ID}-sound-service
 	rm \$PREFIX/bin/$ID
 elif [ "\$1" = "-vncstart" ]; then
     proot-distro login --user "$user_name" $ID -- /bin/sh -c 'vncstart'
@@ -100,7 +98,7 @@ elif [ "\$1" = "-vncstop" ]; then
     proot-distro login $ID -- /bin/sh -c 'vncstop'
 elif [ "\$1" = "-remove" ]; then
     proot-distro remove $ID
-	sudo rm /data/data/com.termux/files/home/.sound
+	rm /data/data/com.termux/files/home/.${ID}-sound-service
 	rm \$PREFIX/bin/$ID
 else
     proot-distro login $ID
@@ -125,17 +123,10 @@ fi
 function install_chromium() {
 	banner
 	echo -e "${R} [${W}-${R}]${C} installing chromium..."${W}
-	if ["ID" == "ubuntu"]; then 
-	apt purge chromium* chromium-browser* snapd -y
-		apt install gnupg2 software-properties-common --no-install-recommends -y
-		echo -e "deb http://ftp.debian.org/debian buster main\ndeb http://ftp.debian.org/debian buster-updates main" >> /etc/apt/sources.list
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DCC9EFBF77E11517
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AA8E81B4331F7F50
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 112695A0E562B32A
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-		apt update -y
-		apt install chromium -y
+	if ["ID" == "ubuntu"]; then
+	wget  https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/patch/chromium.sh
+	bash chromium.sh
+	rm chromium.sh
 	else
 	apt install chromium -y
 	fi
@@ -177,11 +168,6 @@ function browser_installer() {
 		echo
 		firefox_install
 		install_chromium
-	elif [[ ${answer_browser} == "" ]]; then
-		clear
-		echo "${G}installing Firefox browser.."${W}
-		echo 
-		firefox_install
 	else 
 		echo "${G}installing Firefox browser.."${W}
 		echo 
@@ -192,7 +178,6 @@ function browser_installer() {
 function install_gnome_core() {
 	echo "${G}Installing Gnome Core.."${W}
 	sleep 2
-	echo
 	dpkg --configure -a
 	apt-get install gnome-shell gnome-terminal gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
 	clear
@@ -201,7 +186,6 @@ function install_gnome_core() {
 function install_gnome_full() {
 	echo "${G}Installing Gnome Full.."${W}
 	sleep 2
-    echo
 	if [ "${ID}" == "ubuntu" ]; then
 	    dpkg --configure -a
         apt-get install ubuntu-gnome-desktop gnome-software gnome-shell-extension-manager -y
@@ -218,13 +202,14 @@ function install_gnome_full() {
     fi
 	clear
 }
+
 function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
     apt update
      apt --fix-broken install -y
 	 dpkg --configure -a
-    packs=(nano wget gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11 )
+    packs=(sudo nano wget gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11 geoclue-2.0)
     for pack in "${packs[@]}"; do
         type -p "$pack" &>/dev/null || {
             echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}
@@ -266,8 +251,11 @@ function vncstart() {
 	if [[ -e "/bin/vncstart" ]]; then
         rm -rf /bin/vncstart
     fi
-  echo "#!/usr/bin/env bash" >>/bin/vncstart
-  echo "vncserver -geometry 2580x1080 " >>/bin/vncstart
+	 cat <<EOF > "/bin/vncstart"
+#!/usr/bin/env bash
+sudo service dbus start
+vncserver -geometry 2580x1080
+EOF
     chmod +x /bin/vncstart
 }
 
@@ -285,7 +273,6 @@ fi
 touch "$HOME/.vnc/xstartup"
 cat << EOF >> "$HOME/.vnc/xstartup"
 export XDG_CURRENT_DESKTOP="GNOME"
-service dbus start
 gnome-shell --x11
 EOF
 
@@ -293,10 +280,11 @@ chmod +x "$HOME/.vnc/xstartup"
 
 if [ "$useradd_answer" == "y" ]; then
 if [[ ! -d "/home/$user_name/.vnc" ]]; then
-    mkdir -p "$HOME/.vnc"
+    mkdir -p "/home/$user_name/.vnc"
 fi
 cp $HOME/.vnc/xstartup /home/$user_name/.vnc/
 chmod +x /home/$user_name/.vnc/xstartup
+echo "$user_name ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" >> /etc/sudoers
 fi
 vncstart
 vncstop
@@ -307,12 +295,12 @@ vncstop
 
 function add_sound() {
 	echo -e "\n${R} [${W}-${R}]${C} Fixing Sound Problem..."${W}
-    if [[ ! -e "/data/data/com.termux/files/home/.sound" ]]; then
-        touch /data/data/com.termux/files/home/.sound
+    if [[ ! -e "/data/data/com.termux/files/home/.${ID}-sound-service" ]]; then
+        touch /data/data/com.termux/files/home/.${ID}-sound-service
     fi
-    echo "pulseaudio --start --exit-idle-time=-1" >> /data/data/com.termux/files/home/.sound
-    echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" >> /data/data/com.termux/files/home/.sound
-	echo "$(echo "bash ~/.sound" | cat - /data/data/com.termux/files/usr/bin/$ID )" > /data/data/com.termux/files/usr/bin/$ID
+    echo "pulseaudio --start --exit-idle-time=-1" >> /data/data/com.termux/files/home/.${ID}-sound-service
+    echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" >> /data/data/com.termux/files/home/.${ID}-sound-service
+	echo "$(echo "bash ~/.${ID}-sound-service" | cat - /data/data/com.termux/files/usr/bin/$ID )" > /data/data/com.termux/files/usr/bin/$ID
 	echo "export PULSE_SERVER=127.0.0.1" >> /etc/profile
     source /etc/profile
 }
@@ -397,19 +385,16 @@ banner
     echo
     echo -e "${C}Connect & Input the Password."${W}
     echo
-	if [ "$useradd_answer" == "y" ]; then
-	echo -e "${R} If you have problem while running gnome as normal user , just use it as root"${W}
-	echo -e "${G} Use command ${C}$ID -r ,${G}To login as root user"${W}
-	fi
     echo -e "${C}Enjoy"${W}
     echo
     echo
 }
 
 check_root
-update_sys
-login
+get_sys_info
 questions
+login
+update_sys
 package
 install_desktop
 browser_installer
