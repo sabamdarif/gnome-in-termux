@@ -1,8 +1,15 @@
 #!/bin/bash
-
-[[ $(command -v snap) ]] && snap remove firefox
 PREFFILE="/etc/apt/preferences.d/mozilla-firefox"
-apt purge firefox* -y
+
+if command -v snap >/dev/null 2>&1; then
+   if snap list | grep -q firefox; then
+        snap remove firefox
+    fi
+    apt purge snap* -y
+fi
+if dpkg -l | grep -q firefox*; then
+   apt purge firefox* -y
+fi
 
 print_key() {
     cat <<-EOF
