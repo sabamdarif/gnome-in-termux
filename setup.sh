@@ -77,8 +77,9 @@ setup_installer() {
     echo "${G} Setup Installer... "${W}
     cd ~
    wget -O gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    setup_tx11
     if [[ ${answer_distro} == "1" ]]; then
-        mv gnome-installer.sh $distro_path/debian/root
+       mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "2" ]]; then
         mv gnome-installer.sh $distro_path/ubuntu/root
@@ -94,8 +95,16 @@ setup_installer() {
 
 setup_tx11() {
     if [ "$tx11_answer" == "y" ]; then
-    pkg install x11-repo
-    pkg install termux-x11-nightly
+    banner
+    echo "${G}Setup Termux:X11 "${W}
+    echo
+     tx11packs=(x11-repo termux-x11-nightly)
+    for tx11pack in "${tx11packs[@]}"; do
+        type -p "$tx11pack" &>/dev/null || {
+            echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$tx11pack${C}"${W}
+             pkg install "$tx11pack" -y
+        }
+    done
     sed -i 's/tx11_setup_answer/y/g' /data/data/com.termux/files/home/gnome-installer.sh
     fi
 }
@@ -103,5 +112,4 @@ setup_tx11() {
 questions
 basic_task
 install_distro
-setup_tx11
 setup_installer

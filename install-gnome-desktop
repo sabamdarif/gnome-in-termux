@@ -56,8 +56,9 @@ function questions() {
     if [ "$useradd_answer" = "y" ]; then
     echo "${R} [${W}-${R}]${G}Creat user account"${W}
     echo
-    read -p "${G}Input username [Lowercase]:"${W} user_name
-	read -p "${G}Input Password :"${W} pass
+    read -p "${R} [${W}-${R}]${G}Input username [Lowercase]: "${W} user_name
+    echo
+	read -p "${R} [${W}-${R}]${G}Input Password: "${W} pass
     fi
 }
 
@@ -372,27 +373,16 @@ function check_install() {
 
 function note() {
 banner
-    echo -e "${G} Successfully Installed !${W}"
+    echo -e "${G} Successfully Installed !"${W}
     sleep 3
 	echo
     echo -e "${G}Now Restart Termux First And Login Into $ID "${W}
 	echo
     echo -e "${G}Type ${C}$ID${G} to login into $ID "${W}
 	echo
-    echo -e "${G}Type ${C}vncstart ${G} to run Vncserver."${W}
-	echo
-    echo -e "${G}Type ${C}vncstop ${G} to stop Vncserver."${W}
+    echo "${C}Check the NOTE (👇) section in Github Readme to know all commands"${W}
     echo
-    echo -e "${C}Install VNC VIEWER or Nethunter Kex on your Device."${W}
-    echo
-    echo -e "${C}Open VNC VIEWER & Click on + Button."${W}
-    echo
-    echo -e "${C}Enter the Address localhost:1 & Name it anything you like."${W}
-    echo
-    echo -e "${C}Connect & Input the Password."${W}
-    echo
-    echo -e "${C}Enjoy"${W}
-    echo
+    echo "https://github.com/sabamdarif/gnome-in-termux/blob/main/README.md#note"
     echo
 }
 
