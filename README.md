@@ -16,6 +16,7 @@
 - :tv: VLC Media Player work fine
 - :books: Easy To Setup
 - :computer: Vnc Login Issue Fixed
+- :computer: [Termux:x11](https://github.com/termux/termux-x11/releases) Also Work
 - :hammer: Gnome Software Preinstalled (working)
 - :books: And Much More
 
@@ -39,9 +40,10 @@
 5. **You have to note your VNC password !!**
 6. **Now Restart Termux And Login Into Your Distro**
 7. Install VNC VIEWER [Google Play Store](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=en)
-Or NetHunter KeX from [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
-8. Click on Connect & Input the Password
-9. Enjoy :smile:
+Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
+8. Click On Connect & Type The Password
+9. OR, Use [Termux:x11](https://github.com/termux/termux-x11/releases)
+10. Enjoy :smile:
 
 ### NOTE:
 
