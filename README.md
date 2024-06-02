@@ -4,8 +4,8 @@
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/sabamdarif/gnome-in-termux)](https://github.com/sabamdarif/modded-kali/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/sabamdarif/gnome-in-termux)](https://github.com/sabamdarif/modded-kali/issues)
+![GitHub stars](https://img.shields.io/github/stars/sabamdarif/gnome-in-termux)
+![GitHub issues](https://img.shields.io/github/issues/sabamdarif/gnome-in-termux)
 
 </div>
 
@@ -16,13 +16,13 @@
 - :tv: VLC Media Player work fine
 - :books: Easy To Setup
 - :computer: Vnc Login Issue Fixed
-- :computer: [Termux:x11](https://github.com/termux/termux-x11/releases) Also Work
+- :computer: [Termux:x11](https://github.com/termux/termux-x11) Also Work
 - :hammer: Gnome Software Preinstalled (working)
 - :books: And Much More
 
 ### Installation:
 1. If you are using android 12 or higher then first disable phantom process killer [Tutorial](https://termux.xyz/how-to-fix-termux-error-process-completed-signal-9-press-enter/)
-2. Install [Termux](https://termux.com) apk from [HERE](https://f-droid.org/repo/com.termux_118.apk)
+2. Install [Termux](https://termux.com) apk from [HERE](https://f-droid.org/en/packages/com.termux/)
 3. Now copy pest this in termux 👇
 4. 
    ```
@@ -31,7 +31,6 @@
    - Now Select **CORE** Or **FULL(recomended)**
        <details>
        <summary><b><code>DEMO IMAGES: </code></b></summary>
-
        |CORE|FULL|
        |--|--|
        |![img](/images/core-gnome.png)|![img](/images/full-gnome.png)|
@@ -42,7 +41,7 @@
 7. Install VNC VIEWER [Google Play Store](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=en)
 Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
 8. Click On Connect & Type The Password
-9. OR, Use [Termux:x11](https://github.com/termux/termux-x11/releases)
+9. OR, Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better then VNC)
 10. Enjoy :smile:
 
 ### NOTE:
@@ -60,7 +59,7 @@ Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/
 ### Warning: 
 - *In future if you upgarde the system the desktop will fail to launch.*
 ### Fix:
-- **First run the below command then login again**
+- **First run the below command inside your distro then login again**
 ```
 for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
    done
@@ -68,7 +67,7 @@ for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
 
 ### ISSUES:
 - **1:-** *Debian Based Distro Supported Only*
-- **2:-** *Flatpack don't work*
+- **2:-** *Flatpack sanp don't work*
 - **3:-** *Some extension don't work*
 
 ### If you like our work then dont forget to give a Star :)

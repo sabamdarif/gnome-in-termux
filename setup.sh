@@ -62,7 +62,7 @@ install_distro() {
     elif [[ ${answer_distro} == "2" ]]; then
         proot-distro install ubuntu
     elif [[ ${answer_distro} == "3" ]]; then
-    echo "${R} [${W}-${R}]${G} Using Modded-Kali Script To Install Kali In Termux..."${W}
+    echo "${R} [${W}-${R}]${G} Uses Modded-Kali Script To Install Kali In Termux..."${W}
     sleep 0.5
     wget -O kaliinstaller.sh https://raw.githubusercontent.com/sabamdarif/modded-kali/main/setup.sh ; bash kaliinstaller.sh 
     rm kaliinstaller.sh

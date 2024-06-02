@@ -49,16 +49,35 @@ function questions() {
 	echo
 	read -p "${Y}select an option (Default 1): "${W} answer_browser
 	banner
-	read -p "${R} [${W}-${R}]${Y}Do you want to add a normal user account (y/n) "${W} useradd_answer
-	banner
 	read -p "${R} [${W}-${R}]${Y}Do you want to install VLC (y/n) "${W} vlc_answer
     banner
-    if [ "$useradd_answer" = "y" ]; then
-    echo "${R} [${W}-${R}]${G}Creat user account"${W}
+    if [[ "$useradd_answer" == "n" ]]; then
+    banner
+    echo "${R} [${W}-${R}]${G}Skiping User Account Setup"${W}
+    else
+    echo "${R} [${W}-${R}]${G}Create user account"${W}
     echo
+    while true; do
     read -p "${R} [${W}-${R}]${G}Input username [Lowercase]: "${W} user_name
     echo
-	read -p "${R} [${W}-${R}]${G}Input Password: "${W} pass
+    read -p "${R} [${W}-${R}]${G}Input Password: "${W} pass
+    echo
+    read -p "${R} [${W}-${R}]${Y}Do you want to continue with username ${C}$user_name ${Y}and password ${C}$pass${Y} ? (y/n) : " choice
+	choice="${choice:-y}"
+    case $choice in
+        [yY]* )
+            echo "${R} [${W}-${R}]${G}Continuing with username ${C}$user_name ${G}and password ${C}$pass"
+            sleep 0.3
+            break;;
+        [nN]* )
+            echo "${G}Skipping useradd step"${W}
+            sleep 0.3
+            break;;
+        * )
+            echo "${R}Invalid input. Please enter 'y' or 'n'."${W}
+            ;;
+    esac
+done
     fi
 }
 
@@ -85,9 +104,15 @@ function setup_tx11() {
     final_user="root"
     fi
     if [ "$tx11_answer" == "y" ]; then
-    cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
+cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
+rm ~/.cache/sessions/x*
+termux_x11_pid=\$(pgrep -f /system/bin/app_process.*com.termux.x11.Loader)
+xfce_pid=\$(pgrep -f "xfce4-session")
+if [ -n "$termux_x11_pid" ] || [ -n "$xfce_pid" ]; then
+  kill -9 "$termux_x11_pid" "$xfce_pid" > /dev/null 2>&1
+fi
 if [ "\$1" = "-tx11" ]; then
-    kill -9 $(pgrep -f "termux.x11") 2>/dev/null
+    kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
 termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
@@ -291,7 +316,7 @@ if [[ ! -d "/home/$user_name/.vnc" ]]; then
 fi
 cp $HOME/.vnc/xstartup /home/$user_name/.vnc/
 chmod +x /home/$user_name/.vnc/xstartup
-echo "$user_name ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" >> /etc/sudoers
+echo "$user_name ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" | sudo tee -a /etc/sudoers
 fi
 vncstart
 vncstop
