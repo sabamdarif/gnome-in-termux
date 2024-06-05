@@ -51,6 +51,9 @@ function questions() {
 	banner
 	read -p "${R} [${W}-${R}]${Y}Do you want to install VLC (y/n) "${W} vlc_answer
     banner
+    read -p "${R} [${W}-${R}]${Y}Do you want to create a normal user account (y/n) "${W} useradd_answer
+    useradd_answer="${useradd_answer:-y}"
+    banner
     if [[ "$useradd_answer" == "n" ]]; then
     banner
     echo "${R} [${W}-${R}]${G}Skiping User Account Setup"${W}
