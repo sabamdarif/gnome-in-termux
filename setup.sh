@@ -29,6 +29,8 @@ questions() {
 	echo "${Y}2. Ubuntu"${W}
 	echo
     echo "${Y}3. Kali"${W}
+    echo
+    echo "${Y}4. Pardus"${W}
 	echo
 	read -p "${Y}select a distro: "${W} answer_distro
 	echo
@@ -66,6 +68,9 @@ install_distro() {
     sleep 0.5
     wget -O kaliinstaller.sh https://raw.githubusercontent.com/sabamdarif/modded-kali/main/setup.sh ; bash kaliinstaller.sh 
     rm kaliinstaller.sh
+    elif [[ ${answer_distro} == "4" ]]; then
+    echo "After install , debian will be convert into Pardus"
+        proot-distro install debian
     else
         proot-distro install debian
     fi
@@ -87,6 +92,10 @@ setup_installer() {
     elif [[ ${answer_distro} == "3" ]]; then
         mv gnome-installer.sh $distro_path/kali/root
         proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
+    elif [[ ${answer_distro} == "4" ]]; then
+    wget gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
+        mv gnome-installer.sh $distro_path/debian/root
+        proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     else 
         mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
