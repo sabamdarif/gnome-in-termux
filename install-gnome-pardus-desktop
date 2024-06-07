@@ -30,11 +30,9 @@ function check_root(){
 function questions() {
 	banner
 	echo 
-	echo "${R} [${W}-${R}]${G}Select the Gnome Desktop type"${W}
+	echo "${R} [${W}-${R}]${G}Select the Gnome Desktop type"${W} 
 	echo
-	echo "${Y}1. Full (~3.5Gb of space)"${W}
-	echo
-	echo "${Y}2. Core (~1.5GB of space)"${W}
+	echo "${Y}2. Directly pardus gnome desktop(~)"${W}
 	echo
 	read -p "${Y}select an option (Default 1): "${W} answer_desktop
 	banner
@@ -219,31 +217,18 @@ function browser_installer() {
 
 function install_gnome_core() {
 	echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
+        rm /etc/apt/sources.list 
+        touch etc/apt/sources.list
+        echo /etc/apt/sources.list "deb http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
+        deb-src http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
+        deb http://depo.pardus.org.tr/pardus yirmibir main non-free contrib
+        deb-src http://depo.pardus.org.tr/pardus yirmibir main non-free contrib"
 	sleep 2
 	dpkg --configure -a
-	apt-get install gnome-shell gnome-terminal gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
+	apt-get install pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
 	clear
 }
-
-function install_gnome_full() {
-	echo "${R} [${W}-${R}]${G}Installing Gnome Full.."${W}
-	sleep 2
-	if [ "${ID}" == "ubuntu" ]; then
-	    dpkg --configure -a
-        apt-get install ubuntu-gnome-desktop gnome-software gnome-shell-extension-manager -y
-    elif [ "${ID}" == "kali" ]; then
-	    dpkg --configure -a
-        apt-get install kali-desktop-gnome gnome-software gnome-shell-extension-manager -y
-	elif [ "${ID}" == "debian" ]; then
-	apt install gnome -y
-    else
-	echo "${G}Installing Gnome Core First"${W}
-	sleep 1
-        install_gnome_core
-        apt-get install gnome -y
-    fi
-	clear
-}
+	
 function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
@@ -261,15 +246,11 @@ function package() {
 
 function install_desktop() {
     banner
-    if [[ ${answer_desktop} == "1" ]]; then
-        install_gnome_full
-    elif [[ ${answer_desktop} == "2" ]]; then
+    if [[ ${answer_desktop} == "2" ]]; then
         install_gnome_core
-    elif [[ ${answer_desktop} == "" ]]; then
-        install_gnome_full
-    fi
-}
-
+      }
+    done 
+} 
 function vncstop() {
  if [[ -e "/bin/vncstop" ]]; then
         rm -rf /bin/vncstop
