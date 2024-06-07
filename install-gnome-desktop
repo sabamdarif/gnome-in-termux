@@ -230,10 +230,10 @@ function install_gnome_full() {
 	sleep 2
 	if [ "${ID}" == "ubuntu" ]; then
 	    dpkg --configure -a
-        apt-get install ubuntu-gnome-desktop gnome-software gnome-shell-extension-manager -y
+        apt-get install ubuntu-gnome-desktop gnome-tweaks gnome-software gnome-shell-extension-manager -y
     elif [ "${ID}" == "kali" ]; then
 	    dpkg --configure -a
-        apt-get install kali-desktop-gnome gnome-software gnome-shell-extension-manager -y
+        apt-get install kali-desktop-gnome gnome-software gnome-tweaks gnome-shell-extension-manager -y
 	elif [ "${ID}" == "debian" ]; then
 	apt install gnome -y
     else
@@ -250,7 +250,7 @@ function package() {
     apt update
      apt --fix-broken install -y
 	 dpkg --configure -a
-    packs=(sudo nano wget gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11)
+    packs=(sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11)
     for pack in "${packs[@]}"; do
         type -p "$pack" &>/dev/null || {
             echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}

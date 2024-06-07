@@ -69,8 +69,7 @@ install_distro() {
     wget -O kaliinstaller.sh https://raw.githubusercontent.com/sabamdarif/modded-kali/main/setup.sh ; bash kaliinstaller.sh 
     rm kaliinstaller.sh
     elif [[ ${answer_distro} == "4" ]]; then
-    echo "After install , debian will be convert into Pardus"
-        proot-distro install debian
+        proot-distro install pardus
     else
         proot-distro install debian
     fi

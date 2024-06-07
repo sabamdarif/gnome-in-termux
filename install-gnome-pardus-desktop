@@ -210,15 +210,10 @@ function browser_installer() {
 
 function install_gnome_core() {
 	echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
-        rm /etc/apt/sources.list 
-        touch etc/apt/sources.list
-        echo /etc/apt/sources.list "deb http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
-        deb-src http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
-        deb http://depo.pardus.org.tr/pardus yirmibir main non-free contrib
-        deb-src http://depo.pardus.org.tr/pardus yirmibir main non-free contrib"
 	sleep 2
+    update_sys
 	dpkg --configure -a
-	apt-get install pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
+	apt-get install pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
 	clear
 }
 	
@@ -228,7 +223,7 @@ function package() {
     apt update
      apt --fix-broken install -y
 	 dpkg --configure -a
-    packs=(sudo nano wget gnome-tweaks software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11)
+    packs=(sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11)
     for pack in "${packs[@]}"; do
         type -p "$pack" &>/dev/null || {
             echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}
@@ -391,9 +386,19 @@ banner
     echo
 }
 
+function change_sources() {
+    rm /etc/apt/sources.list 
+        touch etc/apt/sources.list
+        echo /etc/apt/sources.list "deb http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
+        deb-src http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
+        deb http://depo.pardus.org.tr/pardus yirmibir main non-free contrib
+        deb-src http://depo.pardus.org.tr/pardus yirmibir main non-free contrib"
+}
+
 check_root
 get_sys_info
 questions
+change_sources
 update_sys
 package
 setup_tx11
