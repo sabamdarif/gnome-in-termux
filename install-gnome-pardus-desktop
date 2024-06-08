@@ -15,9 +15,29 @@ printf "\033[33m┃┃╱╰╋━╮╭━━┳╮╭┳━━╮╱┃┃╭�
 printf "\033[33m┃┃╭━┫╭╮┫╭╮┃╰╯┃┃━┫╱┃┃┃╭╮╮╱╱┃┃┃┃━┫╭┫╰╯┃┃┃┣╋╋╯\033[0m\n"
 printf "\033[33m┃╰┻━┃┃┃┃╰╯┃┃┃┃┃━┫╭┫┣┫┃┃┃╱╱┃┃┃┃━┫┃┃┃┃┃╰╯┣╋╋╮\033[0m\n"
 printf "\033[33m╰━━━┻╯╰┻━━┻┻┻┻━━╯╰━━┻╯╰╯╱╱╰╯╰━━┻╯╰┻┻┻━━┻╯╰╯\033[0m\n"
-printf "\033[32m code by @sabamdrif \033[0m\n"
-printf "\033[32m subscribe my YouTube Channel Hello Android \033[0m\n" 
+echo "${C}${BOLD} Install Gnome Desktop In Termux ${W}"
 echo                                                    
+}
+
+function package_install_and_check() {
+	packs_list=($@)
+	for package_name in "${packs_list[@]}"; do
+    echo "${R}[${W}-${R}]${G}${BOLD} Installing package: ${C}$package_name "${W}
+    apt install "$package_name" -y
+	if [ $? -ne 0 ]; then
+    apt --fix-broken install -y
+	dpkg --Configuring -a
+    fi
+	if dpkg -s "$package_name" >/dev/null 2>&1; then
+    echo "${R}[${W}-${R}]${G} $package_name installed successfully "${W}
+	else
+	if
+    type -p "$package_name" &>/dev/null || [ -e "$PREFIX/bin/$package_name"* ] || [ -e "$PREFIX/bin/"*"$package_name" ]; then
+        echo "${R}[${W}-${R}]${C} $package_name ${G}installed successfully "${W}
+	fi
+    fi
+done
+
 }
 
 function check_root(){
@@ -155,7 +175,7 @@ function vlc_installer() {
 	banner
 if [ "$vlc_answer" == "y" ]; then
 	echo "${R} [${W}-${R}]${G}Installing vlc.."${W}
-		apt install vlc -y
+		package_install_and_check "vlc"
 else
     echo "${R} [${W}-${R}]${C}Canceling Vlc Installation...."${W}
     sleep 1.5
@@ -170,7 +190,7 @@ function install_chromium() {
 	bash chromium.sh
 	rm chromium.sh
 	else
-	apt install chromium -y
+    package_install_and_check "chromium"
 	fi
     sed -i 's/chromium %U/chromium --no-sandbox %U/g' /usr/share/applications/chromium.desktop
 }
@@ -188,7 +208,7 @@ function firefox_install() {
 			bash firefox.sh
 			rm firefox.sh
 			else
-			apt install firefox-esr -y
+            package_install_and_check "firefox-esr"
 		fi
 }
 
@@ -212,8 +232,7 @@ function install_gnome_core() {
 	echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
 	sleep 2
     update_sys
-	dpkg --configure -a
-	apt-get install pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-tweaks gnome-software nautilus gnome-shell-extension-manager -y
+    package_install_and_check "pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-tweaks gnome-software nautilus gnome-shell-extension-manager"
 	clear
 }
 	
@@ -221,15 +240,7 @@ function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
     apt update
-     apt --fix-broken install -y
-	 dpkg --configure -a
-    packs=(sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11)
-    for pack in "${packs[@]}"; do
-        type -p "$pack" &>/dev/null || {
-            echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}
-             apt-get install "$pack" -y --no-install-recommends
-        }
-    done
+    package_install_and_check "sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11"
 }
 
 function install_desktop() {

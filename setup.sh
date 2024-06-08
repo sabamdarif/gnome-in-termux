@@ -1,12 +1,11 @@
-#!/bin/bash
-
+#!/data/data/com.termux/files/usr/bin/bash
 R="$(printf '\033[1;31m')"
 G="$(printf '\033[1;32m')"
 Y="$(printf '\033[1;33m')"
-W="$(printf '\033[1;37m')"
+W="$(printf '\033[0m')"
 C="$(printf '\033[1;36m')"
 
-function banner() {
+banner() {
     clear
 printf "\033[33m╭━━━╮╱╱╱╱╱╱╱╱╱╱╱╱╭━━╮╱╱╱╭━━━━╮\033[0m\n"
 printf "\033[33m┃╭━╮┃╱╱╱╱╱╱╱╱╱╱╱╱╰┫┣╯╱╱╱┃╭╮╭╮┃\033[0m\n"
@@ -14,9 +13,29 @@ printf "\033[33m┃┃╱╰╋━╮╭━━┳╮╭┳━━╮╱┃┃╭�
 printf "\033[33m┃┃╭━┫╭╮┫╭╮┃╰╯┃┃━┫╱┃┃┃╭╮╮╱╱┃┃┃┃━┫╭┫╰╯┃┃┃┣╋╋╯\033[0m\n"
 printf "\033[33m┃╰┻━┃┃┃┃╰╯┃┃┃┃┃━┫╭┫┣┫┃┃┃╱╱┃┃┃┃━┫┃┃┃┃┃╰╯┣╋╋╮\033[0m\n"
 printf "\033[33m╰━━━┻╯╰┻━━┻┻┻┻━━╯╰━━┻╯╰╯╱╱╰╯╰━━┻╯╰┻┻┻━━┻╯╰╯\033[0m\n"
-printf "\033[32m code by @sabamdrif \033[0m\n"
-printf "\033[32m subscribe my YouTube Channel Hello Android \033[0m\n"  
+echo "${C}${BOLD} Install Gnome Desktop In Termux"${W}
 echo                                                   
+}
+
+package_install_and_check() {
+	packs_list=($@)
+	for package_name in "${packs_list[@]}"; do
+    echo "${R}[${W}-${R}]${G}${BOLD} Installing package: ${C}$package_name "${W}
+    pkg install "$package_name" -y
+	if [ $? -ne 0 ]; then
+    apt --fix-broken install -y
+	dpkg --Configuring -a
+    fi
+	if dpkg -s "$package_name" >/dev/null 2>&1; then
+    echo "${R}[${W}-${R}]${G} $package_name installed successfully "${W}
+	else
+	if
+    type -p "$package_name" &>/dev/null || [ -e "$PREFIX/bin/$package_name"* ] || [ -e "$PREFIX/bin/"*"$package_name" ]; then
+        echo "${R}[${W}-${R}]${C} $package_name ${G}installed successfully "${W}
+	fi
+    fi
+done
+
 }
 
 questions() {
@@ -48,13 +67,7 @@ basic_task() {
     termux-setup-Storage
     clear
     echo "${R} [${W}-${R}]${G} Installling Required Packages... "${W}
-     packs=(wget proot proot-distro pulseaudio)
-    for pack in "${packs[@]}"; do
-        type -p "$pack" &>/dev/null || {
-            echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$pack${C}"${W}
-             pkg install "$pack" -y
-        }
-    done
+    package_install_and_check "wget proot proot-distro pulseaudio"
 }
 
 install_distro() {
@@ -75,12 +88,22 @@ install_distro() {
     fi
 }
 
+setup_tx11() {
+    if [ "$tx11_answer" == "y" ]; then
+    banner
+    echo "${G}Setup Termux:X11 "${W}
+    echo
+    package_install_and_check "x11-repo termux-x11-nightly"
+    sed -i 's/tx11_setup_answer/y/g' $HOME/gnome-installer.sh
+    fi
+}
+
 setup_installer() {
     banner
     distro_path="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs"
     echo "${G} Setup Installer... "${W}
     cd ~
-   wget -O gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+   wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
     setup_tx11
     if [[ ${answer_distro} == "1" ]]; then
        mv gnome-installer.sh $distro_path/debian/root
@@ -92,28 +115,13 @@ setup_installer() {
         mv gnome-installer.sh $distro_path/kali/root
         proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "4" ]]; then
-    wget gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
-        mv gnome-installer.sh $distro_path/debian/root
-        proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
+    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
+    setup_tx11
+        mv gnome-installer.sh $distro_path/pardus/root
+        proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
     else 
         mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
-    fi
-}
-
-setup_tx11() {
-    if [ "$tx11_answer" == "y" ]; then
-    banner
-    echo "${G}Setup Termux:X11 "${W}
-    echo
-     tx11packs=(x11-repo termux-x11-nightly)
-    for tx11pack in "${tx11packs[@]}"; do
-        type -p "$tx11pack" &>/dev/null || {
-            echo -e "\n${R} [${W}-${R}]${G} Installing package : ${Y}$tx11pack${C}"${W}
-             pkg install "$tx11pack" -y
-        }
-    done
-    sed -i 's/tx11_setup_answer/y/g' /data/data/com.termux/files/home/gnome-installer.sh
     fi
 }
 
