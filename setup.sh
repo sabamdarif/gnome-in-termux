@@ -49,19 +49,21 @@ questions() {
 	echo
     echo "${Y}3. Kali"${W}
     echo
-    echo "${Y}4. Pardus"${W}
+    echo "${Y}4. Pardus (bad support)"${W}
+	echo
+    echo "${Y}5. Arch"${W}
 	echo
 	read -p "${Y}select a distro: "${W} answer_distro
 	echo
     banner
-    read -p "${R} [${W}-${R}]${Y}Do you want to setup termux-x11(y/n) "${W} tx11_answer
+    read -p "${R} [${W}-${R}]${Y}Do you want to setup termux-x11(Recommended)(y/n) "${W} tx11_answer
 }
 
 basic_task() {
     banner
     echo "${R} [${W}-${R}]${G} Updating Termux... "${W}
     echo
-    pkg update -y
+    pkg update -y -o Dpkg::Options::="--force-confold"
     clear
     echo "${R} [${W}-${R}]${G} Setting Up Storage... "${W}
     termux-setup-Storage
@@ -83,6 +85,8 @@ install_distro() {
     rm kaliinstaller.sh
     elif [[ ${answer_distro} == "4" ]]; then
         proot-distro install pardus
+    elif [[ ${answer_distro} == "5" ]]; then
+        proot-distro install archlinux
     else
         proot-distro install debian
     fi
@@ -119,6 +123,11 @@ setup_installer() {
     setup_tx11
         mv gnome-installer.sh $distro_path/pardus/root
         proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
+    elif [[ ${answer_distro} == "5" ]]; then
+    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-arch-gnome-desktop
+    setup_tx11
+        mv gnome-installer.sh $distro_path/archlinux/root
+        proot-distro login archlinux -- /bin/sh -c 'bash gnome-installer.sh'
     else 
         mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'

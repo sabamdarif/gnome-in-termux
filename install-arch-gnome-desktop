@@ -6,9 +6,9 @@ Y="$(printf '\033[1;33m')"
 W="$(printf '\033[1;37m')"
 C="$(printf '\033[1;36m')"
 
+# Tutorial Credit:- https://www.reddit.com/user/Windows1105/
 function banner() {
     clear
-	
 printf "\033[33m╭━━━╮╱╱╱╱╱╱╱╱╱╱╱╱╭━━╮╱╱╱╭━━━━╮\033[0m\n"
 printf "\033[33m┃╭━╮┃╱╱╱╱╱╱╱╱╱╱╱╱╰┫┣╯╱╱╱┃╭╮╭╮┃\033[0m\n"
 printf "\033[33m┃┃╱╰╋━╮╭━━┳╮╭┳━━╮╱┃┃╭━╮╱╰╯┃┃┣┻━┳━┳╮╭┳╮╭┳╮╭╮\033[0m\n"
@@ -17,27 +17,6 @@ printf "\033[33m┃╰┻━┃┃┃┃╰╯┃┃┃┃┃━┫╭┫┣┫�
 printf "\033[33m╰━━━┻╯╰┻━━┻┻┻┻━━╯╰━━┻╯╰╯╱╱╰╯╰━━┻╯╰┻┻┻━━┻╯╰╯\033[0m\n"
 echo "${C}${BOLD} Install Gnome Desktop In Termux ${W}"
 echo                                                    
-}
-
-function package_install_and_check() {
-	packs_list=($@)
-	for package_name in "${packs_list[@]}"; do
-    echo "${R}[${W}-${R}]${G}${BOLD} Installing package: ${C}$package_name "${W}
-    apt install "$package_name" -y
-	if [ $? -ne 0 ]; then
-    apt --fix-broken install -y
-	dpkg --Configuring -a
-    fi
-	if dpkg -s "$package_name" >/dev/null 2>&1; then
-    echo "${R}[${W}-${R}]${G} $package_name installed successfully "${W}
-	else
-	if
-    type -p "$package_name" &>/dev/null || [ -e "$PREFIX/bin/$package_name"* ] || [ -e "$PREFIX/bin/"*"$package_name" ]; then
-        echo "${R}[${W}-${R}]${C} $package_name ${G}installed successfully "${W}
-	fi
-    fi
-done
-
 }
 
 function check_root(){
@@ -98,50 +77,39 @@ done
 function get_sys_info() {
 	if [ -f /etc/os-release ]; then
     . /etc/os-release
-	if [[ -e "/data/data/com.termux/files/usr/bin/$ID" ]]; then
-        rm -rf /data/data/com.termux/files/usr/bin/$ID
+	if [[ -e "/data/data/com.termux/files/usr/bin/archlinux" ]]; then
+        rm -rf /data/data/com.termux/files/usr/bin/archlinux
     fi
 	fi
 }
 
 function update_sys() {
 	banner
-	echo "${R} [${W}-${R}]${G}Updating ${ID}'s System..."
-	apt update && apt-get update 
+	echo "${R} [${W}-${R}]${G}Updating archlinux's System..."
+	pacman -Syu
 }
 
 function setup_tx11() {
+    echo "${C} Because arch gnome desktop don't work with vnc so you have to use termux:x11"${W}
+    sleep 3
     tx11_answer="tx11_setup_answer"
     if [ "$useradd_answer" = "y" ]; then
     final_user="$user_name"
     else
     final_user="root"
     fi
-    if [ "$tx11_answer" == "y" ]; then
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
-termux_x11_pid=\$(pgrep -f /system/bin/app_process.*com.termux.x11.Loader)
-xfce_pid=\$(pgrep -f "xfce4-session")
-if [ -n "\$termux_x11_pid" ] || [ -n "\$xfce_pid" ]; then
-  kill -9 "\$termux_x11_pid" "\$xfce_pid" > /dev/null 2>&1
-fi
-session_dir="$HOME/.cache/sessions"
-if [ -d "\$session_dir" ]; then
-    files_to_remove=\$(find "\$session_dir" -type f -name 'x*')
-    if [ -n "\$files_to_remove" ]; then
-        rm "\$session_dir"/x*
-    fi
-fi
+cat <<EOF >> "/data/data/com.termux/files/usr/bin/archlinux"
 if [ "\$1" = "-tx11" ]; then
     kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+    pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
+export XDG_RUNTIME_DIR=\${TMPDIR}
 termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
 sleep 1
-proot-distro login $ID --user $final_user --shared-tmp -- /bin/bash -c "sudo service dbus start && export XDG_CURRENT_DESKTOP="GNOME" && env DISPLAY=:0 gnome-shell --x11"
-exit 0
+proot-distro login archlinuxlinux --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
 fi
 EOF
-fi
 }
 
 function login() {
@@ -149,25 +117,19 @@ function login() {
 	if [ "$useradd_answer" = "y" ]; then
 	useradd -m -s $(which bash) ${user_name}
     echo "${user_name}:${pass}" | chpasswd
-	apt install sudo -y
 	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
 fi
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
+cat <<EOF >> "/data/data/com.termux/files/usr/bin/archlinux"
 if [ "\$1" = "-remove" ]; then
-    proot-distro remove $ID
-	rm /data/data/com.termux/files/home/.${ID}-sound-service
-	rm \$PREFIX/bin/$ID
+    proot-distro remove archlinux
+	rm \$PREFIX/bin/archlinux
 elif [ "\$1" = "-r" ]; then
-    proot-distro login $ID
-elif [ "\$1" = "-vncstart" ]; then
-    proot-distro login --user "$final_user" $ID -- /bin/bash -c 'vncstart'
-elif [ "\$1" = "-vncstop" ]; then
-    proot-distro login --user "$final_user" $ID -- /bin/bash -c 'vncstop'
+    proot-distro login archlinux
 else
-    proot-distro login --user $final_user $ID
+    proot-distro login --user $final_user archlinux
 fi
 EOF
-chmod +x /data/data/com.termux/files/usr/bin/$ID 
+chmod +x /data/data/com.termux/files/usr/bin/archlinux 
     clear   
 }
 
@@ -175,7 +137,7 @@ function vlc_installer() {
 	banner
 if [ "$vlc_answer" == "y" ]; then
 	echo "${R} [${W}-${R}]${G}Installing vlc.."${W}
-		package_install_and_check "vlc"
+		pacman -Sy vlc
 else
     echo "${R} [${W}-${R}]${C}Canceling Vlc Installation...."${W}
     sleep 1.5
@@ -185,7 +147,7 @@ fi
 function install_chromium() {
 	banner
 	echo "${R} [${W}-${R}]${G} installing chromium..."${W}
-    package_install_and_check "chromium"
+    pacman -Sy chromium
     sed -i 's/chromium %U/chromium --no-sandbox %U/g' /usr/share/applications/chromium.desktop
 }
 
@@ -196,7 +158,7 @@ function firefox_install() {
 		clear
         echo "${R} [${W}-${R}]${Y} Installing Firefox..."${W}
 		echo
-        package_install_and_check "firefox-esr"
+        pacman -Sy firefox-esr
 }
 
 function browser_installer() {
@@ -214,100 +176,19 @@ function browser_installer() {
 		firefox_install
 	fi
 }
-
-function install_gnome_core() {
-	echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
-	sleep 2
-    update_sys
-    package_install_and_check "pardus-gnome-desktop gnome-terminal gnome-tweaks gnome-tweaks gnome-software nautilus gnome-shell-extension-manager"
-	clear
-}
 	
 function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
-    apt update
-    package_install_and_check "sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11"
+    pacman -Sy sudo dbus
 }
 
 function install_desktop() {
-    banner
-    install_gnome_core
-} 
-function vncstop() {
- if [[ -e "/bin/vncstop" ]]; then
-        rm -rf /bin/vncstop
-    fi
-    cat <<EOF > "/bin/vncstop"
-#!/usr/bin/env bash
-if [ "\$1" == "-f" ]; then
-    pkill Xtigervnc
-else
-    vncserver -kill :*
-fi
-rm -rf /.vnc/localhost:*.pid
-rm -rf /tmp/.X1-lock
-rm -rf /tmp/.X11-unix/X1
-EOF
-chmod +x /bin/vncstop
-}
-
-function vncstart() {
-	if [[ -e "/bin/vncstart" ]]; then
-        rm -rf /bin/vncstart
-    fi
-	 cat <<EOF > "/bin/vncstart"
-#!/usr/bin/env bash
-sudo service dbus start
-vncserver -geometry 2580x1080
-EOF
-    chmod +x /bin/vncstart
-}
-
-function vnc() {
-banner
-   echo -e "${R} [${W}-${R}]${G} Setting up VNC Server..."${W}
- if [[ ! -d "$HOME/.vnc" ]]; then
-    mkdir -p "$HOME/.vnc"
-fi
-
-if [[ -e "$HOME/.vnc/xstartup" ]]; then
-    rm "$HOME/.vnc/xstartup"
-fi
-
-touch "$HOME/.vnc/xstartup"
-cat << EOF >> "$HOME/.vnc/xstartup"
-export XDG_CURRENT_DESKTOP="GNOME"
-gnome-shell --x11
-EOF
-
-chmod +x "$HOME/.vnc/xstartup"
-
-if [ "$useradd_answer" == "y" ]; then
-if [[ ! -d "/home/$user_name/.vnc" ]]; then
-    mkdir -p "/home/$user_name/.vnc"
-fi
-cp $HOME/.vnc/xstartup /home/$user_name/.vnc/
-chmod +x /home/$user_name/.vnc/xstartup
-echo "$user_name ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" | sudo tee -a /etc/sudoers
-fi
-vncstart
-vncstop
- echo -e "${R} [${W}-${R}]${C} Fixing Vnc Login Issue.."${W}
-   for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
-   done
-}
-
-function add_sound() {
-	echo -e "\n${R} [${W}-${R}]${C} Fixing Sound Problem..."${W}
-    if [[ ! -e "/data/data/com.termux/files/home/.${ID}-sound-service" ]]; then
-        touch /data/data/com.termux/files/home/.${ID}-sound-service
-    fi
-    echo "pulseaudio --start --exit-idle-time=-1" >> /data/data/com.termux/files/home/.${ID}-sound-service
-    echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" >> /data/data/com.termux/files/home/.${ID}-sound-service
-	echo "$(echo "bash ~/.${ID}-sound-service" | cat - /data/data/com.termux/files/usr/bin/$ID )" > /data/data/com.termux/files/usr/bin/$ID
-	echo "export PULSE_SERVER=127.0.0.1" >> /etc/profile
-    source /etc/profile
+    echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
+	sleep 2
+    update_sys
+    pacman -Sy gnome gnome-terminal gnome-tweaks --needed --noconfirm
+	clear
 }
 
 function check_firefox() {
@@ -364,7 +245,7 @@ function check_install() {
         if ! type -p "vlc" &>/dev/null; then
             sleep 2
             echo "${R} [${W}-${R}]${R}VLC is not installed, installing now...${W}"
-            apt install vlc -y
+            pacman -Sy vlc -y
         fi
     fi
 }
@@ -374,9 +255,9 @@ banner
     echo -e "${G} Successfully Installed !"${W}
     sleep 3
 	echo
-    echo -e "${G}Now Restart Termux First And Login Into $ID "${W}
+    echo -e "${G}Now Restart Termux First And Login Into archlinux "${W}
 	echo
-    echo -e "${G}Type ${C}$ID${G} to login into $ID "${W}
+    echo -e "${G}Type ${C}archlinux${G} to login into archlinux "${W}
 	echo
     echo "${C}Check the NOTE (👇) section in Github Readme to know all commands"${W}
     echo
@@ -384,19 +265,8 @@ banner
     echo
 }
 
-function change_sources() {
-    rm /etc/apt/sources.list 
-        touch etc/apt/sources.list
-        echo /etc/apt/sources.list "deb http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
-        deb-src http://depo.pardus.org.tr/pardus yirmiuc-deb main contrib non-free non-free-firmware
-        deb http://depo.pardus.org.tr/pardus yirmibir main non-free contrib
-        deb-src http://depo.pardus.org.tr/pardus yirmibir main non-free contrib"
-}
-
 check_root
 get_sys_info
-questions
-change_sources
 update_sys
 package
 setup_tx11
@@ -404,7 +274,5 @@ login
 install_desktop
 browser_installer
 vlc_installer
-vnc
-add_sound
 check_install
 note

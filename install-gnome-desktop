@@ -128,16 +128,12 @@ function setup_tx11() {
     fi
     if [ "$tx11_answer" == "y" ]; then
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
-termux_x11_pid=\$(pgrep -f /system/bin/app_process.*com.termux.x11.Loader)
-xfce_pid=\$(pgrep -f "xfce4-session")
-if [ -n "\$termux_x11_pid" ] || [ -n "\$xfce_pid" ]; then
-  kill -9 "\$termux_x11_pid" "\$xfce_pid" > /dev/null 2>&1
-fi
-session_dir="$HOME/.cache/sessions"
+kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+session_dir="\$HOME/.cache/sessions"
 if [ -d "\$session_dir" ]; then
     files_to_remove=\$(find "\$session_dir" -type f -name 'x*')
     if [ -n "\$files_to_remove" ]; then
-        rm "\$session_dir"/x*
+        rm "\$session_dir"/x* > /dev/null 2>&1
     fi
 fi
 if [ "\$1" = "-tx11" ]; then
