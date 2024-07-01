@@ -86,12 +86,13 @@ function get_sys_info() {
 function update_sys() {
 	banner
 	echo "${R} [${W}-${R}]${G}Updating archlinux's System..."
-	pacman -Syu
+	pacman -Syu --needed --noconfirm
 }
 
 function setup_tx11() {
-    echo "${C} Because arch gnome desktop don't work with vnc so you have to use termux:x11"${W}
-    sleep 3
+    echo "${G} Fixing gnome black screen issue..."${W}
+    find /usr -type f -iname "*login1*" -exec rm -f {} \; && mkdir /run/dbus
+    sleep 2
     tx11_answer="tx11_setup_answer"
     if [ "$useradd_answer" = "y" ]; then
     final_user="$user_name"
@@ -107,7 +108,14 @@ termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
 sleep 1
-proot-distro login archlinuxlinux --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
+proot-distro login archlinux --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
+elif [ "\$1" = "-remove" ]; then
+    proot-distro remove archlinux
+	rm \$PREFIX/bin/archlinux
+elif [ "\$1" = "-r" ]; then
+    proot-distro login archlinux
+else
+    proot-distro login --user $final_user archlinux
 fi
 EOF
 }
@@ -119,17 +127,6 @@ function login() {
     echo "${user_name}:${pass}" | chpasswd
 	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
 fi
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/archlinux"
-if [ "\$1" = "-remove" ]; then
-    proot-distro remove archlinux
-	rm \$PREFIX/bin/archlinux
-elif [ "\$1" = "-r" ]; then
-    proot-distro login archlinux
-else
-    proot-distro login --user $final_user archlinux
-fi
-EOF
-chmod +x /data/data/com.termux/files/usr/bin/archlinux 
     clear   
 }
 
@@ -158,7 +155,7 @@ function firefox_install() {
 		clear
         echo "${R} [${W}-${R}]${Y} Installing Firefox..."${W}
 		echo
-        pacman -Sy firefox-esr
+        pacman -Sy firefox --needed --noconfirm
 }
 
 function browser_installer() {
@@ -266,13 +263,14 @@ banner
 }
 
 check_root
+questions
 get_sys_info
 update_sys
 package
-setup_tx11
 login
 install_desktop
 browser_installer
 vlc_installer
 check_install
+setup_tx11
 note

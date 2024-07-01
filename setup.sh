@@ -125,7 +125,12 @@ setup_installer() {
         proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "5" ]]; then
     wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-arch-gnome-desktop
-    setup_tx11
+    echo "${C} Because arch gnome desktop don't work with vnc so you have to use termux:x11"${W}
+    sleep 3
+    banner
+    echo "${G}Setup Termux:X11 "${W}
+    echo
+    package_install_and_check "x11-repo termux-x11-nightly"
         mv gnome-installer.sh $distro_path/archlinux/root
         proot-distro login archlinux -- /bin/sh -c 'bash gnome-installer.sh'
     else 
