@@ -152,10 +152,11 @@ fi
 function login() {
 	banner
 	if [ "$useradd_answer" = "y" ]; then
-	useradd -m -s $(which bash) ${user_name}
+	useradd -m -g users -s $(which bash) ${user_name}
+    usermod -aG wheel,polkitd,audio,video,storage ${user_name}
     echo "${user_name}:${pass}" | chpasswd
 	apt install sudo -y
-	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    echo "$user_name ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
 fi
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
 if [ "\$1" = "-remove" ]; then

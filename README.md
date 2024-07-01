@@ -19,6 +19,7 @@
 - :computer: [Termux:x11](https://github.com/termux/termux-x11) Also Work
 - :hammer: Gnome Software Preinstalled (working)
 - :books: And Much More
+- :hammer: Flatpak work in archlinux
 
 ### Installation:
 1. If you are using android 12 or higher then first disable phantom process killer [Tutorial](https://termux.xyz/how-to-fix-termux-error-process-completed-signal-9-press-enter/)
