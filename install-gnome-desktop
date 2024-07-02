@@ -152,6 +152,8 @@ fi
 function login() {
 	banner
 	if [ "$useradd_answer" = "y" ]; then
+    groupadd storage
+    groupadd wheel
 	useradd -m -g users -s $(which bash) ${user_name}
     usermod -aG wheel,polkitd,audio,video,storage ${user_name}
     echo "${user_name}:${pass}" | chpasswd
