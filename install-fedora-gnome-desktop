@@ -76,15 +76,15 @@ function questions() {
 function get_sys_info() {
 	if [ -f /etc/os-release ]; then
     . /etc/os-release
-	if [[ -e "/data/data/com.termux/files/usr/bin/archlinux" ]]; then
-        rm -rf /data/data/com.termux/files/usr/bin/archlinux
+	if [[ -e "/data/data/com.termux/files/usr/bin/fedora" ]]; then
+        rm -rf /data/data/com.termux/files/usr/bin/fedora
     fi
 	fi
 }
 
 function update_sys() {
 	banner
-	echo "${R} [${W}-${R}]${G}Updating archlinux's System..."
+	echo "${R} [${W}-${R}]${G}Updating fedora's System..."
 	dnf update -y
 }
 
@@ -98,7 +98,7 @@ function setup_tx11() {
     else
     final_user="root"
     fi
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/archlinux"
+cat <<EOF >> "/data/data/com.termux/files/usr/bin/fedora"
 if [ "\$1" = "-tx11" ]; then
     kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
     pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
@@ -107,14 +107,14 @@ termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
 sleep 1
-proot-distro login archlinux --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
+proot-distro login fedora --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
 elif [ "\$1" = "-remove" ]; then
-    proot-distro remove archlinux
-	rm \$PREFIX/bin/archlinux
+    proot-distro remove fedora
+	rm \$PREFIX/bin/fedora
 elif [ "\$1" = "-r" ]; then
-    proot-distro login archlinux
+    proot-distro login fedora
 else
-    proot-distro login --user $final_user archlinux
+    proot-distro login --user $final_user fedora
 fi
 EOF
 }
@@ -251,9 +251,9 @@ banner
     echo -e "${G} Successfully Installed !"${W}
     sleep 3
 	echo
-    echo -e "${G}Now Restart Termux First And Login Into archlinux "${W}
+    echo -e "${G}Now Restart Termux First And Login Into fedora "${W}
 	echo
-    echo -e "${G}Type ${C}archlinux${G} to login into archlinux "${W}
+    echo -e "${G}Type ${C}fedora${G} to login into fedora "${W}
 	echo
     echo "${C}Check the NOTE (👇) section in Github Readme to know all commands"${W}
     echo
