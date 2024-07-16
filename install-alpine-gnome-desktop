@@ -43,49 +43,50 @@ function questions() {
     read -p "${R} [${W}-${R}]${Y}Do you want to create a normal user account (y/n) "${W} useradd_answer
     useradd_answer="${useradd_answer:-y}"
     banner
-#     if [[ "$useradd_answer" == "n" ]]; then
-#     banner
-#     echo "${R} [${W}-${R}]${G}Skiping User Account Setup"${W}
-#     else
-#     echo "${R} [${W}-${R}]${G}Create user account"${W}
-#     echo
-#     while true; do
-#     read -p "${R} [${W}-${R}]${G}Input username [Lowercase]: "${W} user_name
-#     echo
-#     read -p "${R} [${W}-${R}]${G}Input Password: "${W} pass
-#     echo
-#     read -p "${R} [${W}-${R}]${Y}Do you want to continue with username ${C}$user_name ${Y}and password ${C}$pass${Y} ? (y/n) : " choice
-# 	choice="${choice:-y}"
-#     case $choice in
-#         [yY]* )
-#             echo "${R} [${W}-${R}]${G}Continuing with username ${C}$user_name ${G}and password ${C}$pass"
-#             sleep 0.3
-#             break;;
-#         [nN]* )
-#             echo "${G}Skipping useradd step"${W}
-#             sleep 0.3
-#             break;;
-#         * )
-#             echo "${R}Invalid input. Please enter 'y' or 'n'."${W}
-#             ;;
-#     esac
-# done
-#     fi
+    if [[ "$useradd_answer" == "n" ]]; then
+    banner
+    echo "${R} [${W}-${R}]${G}Skiping User Account Setup"${W}
+    else
+    echo "${R} [${W}-${R}]${G}Create user account"${W}
+    echo
+    while true; do
+    read -p "${R} [${W}-${R}]${G}Input username [Lowercase]: "${W} user_name
+    echo
+    read -p "${R} [${W}-${R}]${G}Input Password: "${W} pass
+    echo
+    read -p "${R} [${W}-${R}]${Y}Do you want to continue with username ${C}$user_name ${Y}and password ${C}$pass${Y} ? (y/n) : " choice
+	choice="${choice:-y}"
+    case $choice in
+        [yY]* )
+            echo "${R} [${W}-${R}]${G}Continuing with username ${C}$user_name ${G}and password ${C}$pass"
+            sleep 0.3
+            break;;
+        [nN]* )
+            echo "${G}Skipping useradd step"${W}
+            sleep 0.3
+            break;;
+        * )
+            echo "${R}Invalid input. Please enter 'y' or 'n'."${W}
+            ;;
+    esac
+done
+    fi
 }
 
 function get_sys_info() {
 	if [ -f /etc/os-release ]; then
     . /etc/os-release
-	if [[ -e "/data/data/com.termux/files/usr/bin/fedora" ]]; then
-        rm -rf /data/data/com.termux/files/usr/bin/fedora
+	if [[ -e "/data/data/com.termux/files/usr/bin/alpine" ]]; then
+        rm -rf /data/data/com.termux/files/usr/bin/alpine
     fi
 	fi
 }
 
 function update_sys() {
 	banner
-	echo "${R} [${W}-${R}]${G}Updating fedora's System..."
-	dnf update -y
+	echo "${R} [${W}-${R}]${G}Updating alpine's System..."
+	apk update
+    apk upgrade
 }
 
 function setup_tx11() {
@@ -93,12 +94,7 @@ function setup_tx11() {
     find /usr -type f -iname "*login1*" -exec rm -f {} \; && mkdir /run/dbus
     sleep 2
     tx11_answer="tx11_setup_answer"
-    if [ "$useradd_answer" == "y" ]; then
-    final_user="$user_name"
-    else
-    final_user="root"
-    fi
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/fedora"
+cat <<EOF >> "/data/data/com.termux/files/usr/bin/alpine"
 if [ "\$1" = "-tx11" ]; then
     kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
     pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
@@ -107,33 +103,44 @@ termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
 sleep 1
-proot-distro login fedora --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
+proot-distro login alpine --shared-tmp -- /bin/bash -c 'export DISPLAY=:0 XDG_RUNTIME_DIR=\${TMPDIR} PULSE_SERVER=127.0.0.1 XDG_CURRENT_DESKTOP="GNOME" && rm -rf /run/dbus/pid && dbus-daemon --system && su - $final_user -c "env DISPLAY=:0 dbus-launch gnome-shell --x11"'
 elif [ "\$1" = "-remove" ]; then
-    proot-distro remove fedora
-	rm \$PREFIX/bin/fedora
+    proot-distro remove alpine
+	rm \$PREFIX/bin/alpine
 elif [ "\$1" = "-r" ]; then
-    proot-distro login fedora
+    proot-distro login alpine
 else
-    proot-distro login --user $final_user fedora
+    proot-distro login --user $final_user alpine
 fi
 EOF
 }
 
-# function login() {
-# 	banner
-# 	if [ "$useradd_answer" = "y" ]; then
-# 	useradd -m -s $(which bash) ${user_name}
-#     echo "${user_name}:${pass}" | chpasswd
-# 	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
-# fi
-#     clear   
-# }
+function login() {
+	banner
+    if [ "$useradd_answer" == "y" ]; then
+    final_user="$user_name"
+    else
+    final_user="root"
+    fi
+    if [ "$useradd_answer" == "y" ]; then
+    groupadd storage
+    groupadd wheel
+    mkdir -p /home/${final_user}
+    adduser -h /home/$final_user -s \$(which bash) -G users -D $final_user
+    chown ${final_user}:users /home/$final_user
+    echo "${final_user}:${pass}" | chpasswd
+    chmod u+rw /etc/sudoers
+    echo "$final_user ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
+    chmod u-w /etc/sudoers
+    fi
+    clear   
+}
 
 function vlc_installer() {
 	banner
 if [ "$vlc_answer" == "y" ]; then
 	echo "${R} [${W}-${R}]${G}Installing vlc.."${W}
-		dnf install vlc -y
+		apk add vlc
 else
     echo "${R} [${W}-${R}]${C}Canceling Vlc Installation...."${W}
     sleep 1.5
@@ -143,7 +150,7 @@ fi
 function install_chromium() {
 	banner
 	echo "${R} [${W}-${R}]${G} installing chromium..."${W}
-    dnf install chromium -y
+    apk add chromium
     sed -i 's/chromium %U/chromium --no-sandbox %U/g' /usr/share/applications/chromium.desktop
 }
 
@@ -154,7 +161,7 @@ function firefox_install() {
 		clear
         echo "${R} [${W}-${R}]${Y} Installing Firefox..."${W}
 		echo
-        dnf install firefox -y
+        apk add firefox
 }
 
 function browser_installer() {
@@ -176,14 +183,14 @@ function browser_installer() {
 function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
-    dnf install sudo dbus -y
+    apk add sudo dbus
 }
 
 function install_desktop() {
     echo "${R} [${W}-${R}]${G}Installing Gnome Core.."${W}
 	sleep 2
     update_sys
-    dnf install gnome-shell gnome-terminal gnome-software gnome-tweaks -y
+    apk add gnome gnome-terminal gnome-tweaks
 	clear
 }
 
@@ -253,7 +260,7 @@ function check_install() {
         if ! type -p "vlc" &>/dev/null; then
             sleep 2
             echo "${R} [${W}-${R}]${R}VLC is not installed, installing now...${W}"
-            pacman -Sy vlc -y
+            apk add vlc -y
         fi
     fi
 }
@@ -263,9 +270,9 @@ banner
     echo -e "${G} Successfully Installed !"${W}
     sleep 3
 	echo
-    echo -e "${G}Now Restart Termux First And Login Into fedora "${W}
+    echo -e "${G}Now Restart Termux First And Login Into alpine "${W}
 	echo
-    echo -e "${G}Type ${C}fedora${G} to login into fedora "${W}
+    echo -e "${G}Type ${C}alpine${G} to login into alpine "${W}
 	echo
     echo "${C}Check the NOTE (👇) section in Github Readme to know all commands"${W}
     echo
@@ -282,7 +289,7 @@ login
 install_desktop
 browser_installer
 vlc_installer
-add_sound
 check_install
+add_sound
 setup_tx11
 note

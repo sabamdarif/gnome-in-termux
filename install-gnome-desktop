@@ -121,7 +121,7 @@ function update_sys() {
 
 function setup_tx11() {
     tx11_answer="tx11_setup_answer"
-    if [ "$useradd_answer" = "y" ]; then
+    if [ "$useradd_answer" == "y" ]; then
     final_user="$user_name"
     else
     final_user="root"
@@ -151,7 +151,7 @@ fi
 
 function login() {
 	banner
-	if [ "$useradd_answer" = "y" ]; then
+	if [ "$useradd_answer" == "y" ]; then
     groupadd storage
     groupadd wheel
 	useradd -m -g users -s $(which bash) ${user_name}

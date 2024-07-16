@@ -93,12 +93,6 @@ function setup_tx11() {
     echo "${G} Fixing gnome black screen issue..."${W}
     find /usr -type f -iname "*login1*" -exec rm -f {} \; && mkdir /run/dbus
     sleep 2
-    tx11_answer="tx11_setup_answer"
-    if [ "$useradd_answer" = "y" ]; then
-    final_user="$user_name"
-    else
-    final_user="root"
-    fi
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/archlinux"
 if [ "\$1" = "-tx11" ]; then
     kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
@@ -122,13 +116,18 @@ EOF
 
 function login() {
 	banner
-    if [ "$useradd_answer" = "y" ]; then
+    if [ "$useradd_answer" == "y" ]; then
+    final_user="$user_name"
+    else
+    final_user="root"
+    fi
+    if [ "$useradd_answer" == "y" ]; then
     groupadd storage
     groupadd wheel
-	useradd -m -g users -s $(which bash) ${user_name}
-    usermod -aG wheel,polkitd,audio,video,storage ${user_name}
-    echo "${user_name}:${pass}" | chpasswd
-    echo "$user_name ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
+	useradd -m -g users -s $(which bash) ${final_user}
+    usermod -aG wheel,polkitd,audio,video,storage ${final_user}
+    echo "${final_user}:${pass}" | chpasswd
+    echo "$final_user ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
 fi
     clear   
 }
@@ -189,6 +188,18 @@ function install_desktop() {
     update_sys
     pacman -Sy gnome gnome-terminal gnome-tweaks --needed --noconfirm
 	clear
+}
+
+function add_sound() {
+	echo -e "\n${R} [${W}-${R}]${C} Fixing Sound Problem..."${W}
+    if [[ ! -e "/data/data/com.termux/files/home/.${ID}-sound-service" ]]; then
+        touch /data/data/com.termux/files/home/.${ID}-sound-service
+    fi
+    echo "pulseaudio --start --exit-idle-time=-1" >> /data/data/com.termux/files/home/.${ID}-sound-service
+    echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" >> /data/data/com.termux/files/home/.${ID}-sound-service
+	echo "$(echo "bash ~/.${ID}-sound-service" | cat - /data/data/com.termux/files/usr/bin/$ID )" > /data/data/com.termux/files/usr/bin/$ID
+	echo "export PULSE_SERVER=127.0.0.1" >> /etc/profile
+    source /etc/profile
 }
 
 function check_firefox() {
@@ -275,5 +286,6 @@ install_desktop
 browser_installer
 vlc_installer
 check_install
+add_sound
 setup_tx11
 note
