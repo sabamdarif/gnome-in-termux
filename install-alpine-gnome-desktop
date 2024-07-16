@@ -126,7 +126,7 @@ function login() {
     groupadd storage
     groupadd wheel
     mkdir -p /home/${final_user}
-    adduser -h /home/$final_user -s \$(which bash) -G users -D $final_user
+    adduser -h /home/$final_user -s $(which bash) -G users -D $final_user
     chown ${final_user}:users /home/$final_user
     echo "${final_user}:${pass}" | chpasswd
     chmod u+rw /etc/sudoers
