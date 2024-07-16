@@ -55,6 +55,8 @@ questions() {
 	echo
     echo "${Y}6. Fedora"${W}
 	echo
+    echo "${Y}7. Alpine"${W}
+	echo
 	read -p "${Y}select a distro: "${W} answer_distro
 	echo
     banner
@@ -91,6 +93,8 @@ install_distro() {
         proot-distro install archlinux
     elif [[ ${answer_distro} == "6" ]]; then
         proot-distro install fedora
+    elif [[ ${answer_distro} == "7" ]]; then
+        proot-distro install alpine
     else
         proot-distro install debian
     fi
@@ -125,8 +129,9 @@ setup_installer() {
     elif [[ ${answer_distro} == "4" ]]; then
     wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
     setup_tx11
-        mv gnome-installer.sh $distro_path/pardus/root
-        proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/pardus/root
+    proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
+
     elif [[ ${answer_distro} == "5" ]]; then
     wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-arch-gnome-desktop
     banner
@@ -135,18 +140,31 @@ setup_installer() {
     echo "${G}Setup Termux:X11 "${W}
     echo
     package_install_and_check "x11-repo termux-x11-nightly"
-        mv gnome-installer.sh $distro_path/archlinux/root
-        proot-distro login archlinux -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/archlinux/root
+    proot-distro login archlinux -- /bin/sh -c 'bash gnome-installer.sh'
+
     elif [[ ${answer_distro} == "6" ]]; then
     wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-fedora-gnome-desktop
     banner
-    echo "${C} Because arch gnome desktop don't work with vnc so you have to use termux:x11"${W}
+    echo "${C} Because fedora gnome desktop don't work with vnc so you have to use termux:x11"${W}
     sleep 3
     echo "${G}Setup Termux:X11 "${W}
     echo
     package_install_and_check "x11-repo termux-x11-nightly"
-        mv gnome-installer.sh $distro_path/fedora/root
-        proot-distro login fedora -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/fedora/root
+    proot-distro login fedora -- /bin/sh -c 'bash gnome-installer.sh'
+
+    elif [[ ${answer_distro} == "7" ]]; then
+    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-alpine-gnome-desktop
+    banner
+    echo "${C} Because alpine gnome desktop don't work with vnc so you have to use termux:x11"${W}
+    sleep 3
+    echo "${G}Setup Termux:X11 "${W}
+    echo
+    package_install_and_check "x11-repo termux-x11-nightly"
+    mv gnome-installer.sh $distro_path/alpine/root
+    proot-distro login alpine -- /bin/sh -c 'bash gnome-installer.sh'
+
     else 
         mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
