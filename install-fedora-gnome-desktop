@@ -100,7 +100,7 @@ function setup_tx11() {
     fi
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/fedora"
 if [ "\$1" = "-tx11" ]; then
-    kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+    pkill -f com.termux.x11 2>/dev/null
     pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
 export XDG_RUNTIME_DIR=\${TMPDIR}
 termux-x11 :0 >/dev/null &

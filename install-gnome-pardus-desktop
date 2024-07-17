@@ -119,11 +119,6 @@ function setup_tx11() {
     fi
     if [ "$tx11_answer" == "y" ]; then
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
-termux_x11_pid=\$(pgrep -f /system/bin/app_process.*com.termux.x11.Loader)
-xfce_pid=\$(pgrep -f "xfce4-session")
-if [ -n "\$termux_x11_pid" ] || [ -n "\$xfce_pid" ]; then
-  kill -9 "\$termux_x11_pid" "\$xfce_pid" > /dev/null 2>&1
-fi
 session_dir="$HOME/.cache/sessions"
 if [ -d "\$session_dir" ]; then
     files_to_remove=\$(find "\$session_dir" -type f -name 'x*')
@@ -132,7 +127,7 @@ if [ -d "\$session_dir" ]; then
     fi
 fi
 if [ "\$1" = "-tx11" ]; then
-    kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+    pkill -f com.termux.x11
 termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1

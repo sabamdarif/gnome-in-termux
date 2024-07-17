@@ -118,16 +118,19 @@ setup_installer() {
     setup_tx11
     if [[ ${answer_distro} == "1" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
-       mv gnome-installer.sh $distro_path/debian/root
-        proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/debian/root
+    proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
+
     elif [[ ${answer_distro} == "2" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
-        mv gnome-installer.sh $distro_path/ubuntu/root
-        proot-distro login ubuntu -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/ubuntu/root
+    proot-distro login ubuntu -- /bin/sh -c 'bash gnome-installer.sh'
+
     elif [[ ${answer_distro} == "3" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
-        mv gnome-installer.sh $distro_path/kali/root
-        proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
+    mv gnome-installer.sh $distro_path/kali/root
+    proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
+
     elif [[ ${answer_distro} == "4" ]]; then
     wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
     setup_tx11
@@ -167,9 +170,10 @@ setup_installer() {
     mv gnome-installer.sh $distro_path/alpine/root
     proot-distro login alpine -- /bin/sh -c 'bash gnome-installer.sh'
 
-    else 
-        mv gnome-installer.sh $distro_path/debian/root
-        proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
+    else
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    mv gnome-installer.sh $distro_path/debian/root
+    proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     fi
 }
 

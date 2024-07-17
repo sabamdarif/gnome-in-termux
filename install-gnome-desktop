@@ -128,7 +128,6 @@ function setup_tx11() {
     fi
     if [ "$tx11_answer" == "y" ]; then
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
-kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
 session_dir="\$HOME/.cache/sessions"
 if [ -d "\$session_dir" ]; then
     files_to_remove=\$(find "\$session_dir" -type f -name 'x*')
@@ -137,7 +136,7 @@ if [ -d "\$session_dir" ]; then
     fi
 fi
 if [ "\$1" = "-tx11" ]; then
-    kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+    pkill -f com.termux.x11 2>/dev/null
 termux-x11 :0 >/dev/null &
 sleep 3
 am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1

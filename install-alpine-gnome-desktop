@@ -96,8 +96,9 @@ function setup_tx11() {
     tx11_answer="tx11_setup_answer"
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/alpine"
 if [ "\$1" = "-tx11" ]; then
-    kill -9 \$(pgrep -f "termux.x11") 2>/dev/null
+    pkill -f com.termux.x11 2>/dev/null
     pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
+    proot-distro login alpine --shared-tmp -- /bin/bash -c 'rm /run/dbus/dbus.pid 2>/dev/null'
 export XDG_RUNTIME_DIR=\${TMPDIR}
 termux-x11 :0 >/dev/null &
 sleep 3
