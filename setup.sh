@@ -115,15 +115,17 @@ setup_installer() {
     distro_path="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs"
     echo "${G} Setup Installer... "${W}
     cd ~
-   wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
     setup_tx11
     if [[ ${answer_distro} == "1" ]]; then
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
        mv gnome-installer.sh $distro_path/debian/root
         proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "2" ]]; then
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
         mv gnome-installer.sh $distro_path/ubuntu/root
         proot-distro login ubuntu -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "3" ]]; then
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
         mv gnome-installer.sh $distro_path/kali/root
         proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
     elif [[ ${answer_distro} == "4" ]]; then
