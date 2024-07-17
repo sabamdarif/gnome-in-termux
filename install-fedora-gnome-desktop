@@ -117,6 +117,7 @@ else
     proot-distro login --user $final_user fedora
 fi
 EOF
+chmod +x /data/data/com.termux/files/usr/bin/fedora
 }
 
 # function login() {

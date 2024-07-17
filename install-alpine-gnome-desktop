@@ -113,6 +113,7 @@ else
     proot-distro login --user $final_user alpine
 fi
 EOF
+chmod +x /data/data/com.termux/files/usr/bin/alpine
 }
 
 function login() {

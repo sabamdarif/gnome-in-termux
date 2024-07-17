@@ -112,6 +112,7 @@ else
     proot-distro login --user $final_user archlinux
 fi
 EOF
+chmod +x /data/data/com.termux/files/usr/bin/archlinux
 }
 
 function login() {
