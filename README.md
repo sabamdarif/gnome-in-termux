@@ -15,8 +15,8 @@
 - :globe_with_meridians: 2 Browsers (Chromium & Mozilla Firefox)
 - :tv: VLC Media Player work fine
 - :books: Easy To Setup
-- :computer: Vnc Login Issue Fixed
-- :computer: [Termux:x11](https://github.com/termux/termux-x11) Also Work
+- :computer: Login Issue Fixed
+- :computer: [Termux:x11](https://github.com/termux/termux-x11) For Display Server
 - :hammer: Gnome Software Preinstalled (working)
 - :books: And Much More
 
@@ -26,7 +26,7 @@
 3. Now copy pest this in termux 👇
 4. 
    ```
-   pkg update -y ; pkg install wget -y ; wget https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/setup.sh ; bash setup.sh 
+   curl -Lf https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/setup.sh -o setup.sh ; bash setup.sh
     ```
    - Now Select **CORE** Or **FULL(recomended)**
        <details>
@@ -36,14 +36,8 @@
        |--|--|
        |![img](/images/core-gnome.png)|![img](/images/full-gnome.png)|
       </details>
-
-5. **You have to note your VNC password !!**
-6. **Now Restart Termux And Login Into Your Distro**
-7. Install VNC VIEWER [Google Play Store](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=en)
-Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/com.offsec.nethunter.kex/)
-8. Click On Connect & Type The Password
-9. OR, Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better then VNC)
-10. Enjoy :smile:
+5. Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better then VNC)
+6. Enjoy :smile:
 
 ### NOTE:
 
@@ -52,7 +46,7 @@ Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/
 - **Type `DISTRO-NAME -tx11` to use gnome with Termux-x11**
 - **Type `DISTRO-NAME -remove` to remove the distro**
 
-**Like If You Install Debian So Just Type `debian -r / debian -vncstart / debian -remove`**
+**Like If You Install Debian So Just Type `debian -r / debian -tx11 / debian -remove`**
 
 ### Warning: 
 - *In future if you upgarde the system the desktop will fail to launch.*

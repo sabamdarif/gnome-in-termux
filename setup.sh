@@ -73,12 +73,23 @@ questions() {
 
 basic_task() {
     banner
-    echo "${R}[${W}-${R}]${G} Updating Termux... "${W}
-    echo
+    echo "${R}[${W}-${R}]${G}${BOLD} Updating System...."${W}
+	echo
     pkg update -y -o Dpkg::Options::="--force-confold"
+	pkg upgrade -y -o Dpkg::Options::="--force-confold"
     clear
-    echo "${R} [${W}-${R}]${G} Setting Up Storage... "${W}
-    termux-setup-Storage
+    echo "${R}[${W}-${R}]${G}${BOLD} Configuring Storage..."${W}
+	echo
+	while true; do
+	termux-setup-storage
+	sleep 4
+    if [[ -d ~/storage ]]; then
+        break
+    else
+        echo "${R} Storage permission denied"${W}
+    fi
+    sleep 3
+    done
     clear
     echo "${R} [${W}-${R}]${G} Installling Required Packages... "${W}
     package_install_and_check "wget proot proot-distro pulseaudio"
