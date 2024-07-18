@@ -84,7 +84,7 @@ function get_sys_info() {
 
 function update_sys() {
 	banner
-	echo "${R} [${W}-${R}]${G}Updating alpine's System..."
+	echo "${R} [${W}-${R}]${G}Updating alpine's System..." ${W}
 	apk update
     apk upgrade
 }
@@ -93,7 +93,6 @@ function setup_tx11() {
     echo "${G} Fixing gnome black screen issue..."${W}
     find /usr -type f -iname "*login1*" -exec rm -f {} \; && mkdir /run/dbus
     sleep 2
-    tx11_answer="tx11_setup_answer"
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/alpine"
 if [ "\$1" = "-tx11" ]; then
     pkill -f com.termux.x11 2>/dev/null

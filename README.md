@@ -49,10 +49,7 @@ Or NetHunter KeX From [Nethunter Store](https://store.nethunter.com/en/packages/
 
 - **Type `DISTRO-NAME` to login into DISTRO CLI.**
 - **Type `DISTRO-NAME -r` to login as root user**
-- **Type `vncstart` OR From Termux Type `DISTRO-NAME -vncstart` to run Vncserver**
-- **Type `vncstop` OR From Termux Type `DISTRO-NAME -vncstart` to stop Vncserver**
 - **Type `DISTRO-NAME -tx11` to use gnome with Termux-x11**
-- **Type `vncstop -f` to stop Vncserver forcefully**
 - **Type `DISTRO-NAME -remove` to remove the distro**
 
 **Like If You Install Debian So Just Type `debian -r / debian -vncstart / debian -remove`**

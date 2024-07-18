@@ -38,6 +38,14 @@ done
 
 }
 
+get_latest_release() {
+	local repo_woner="$1"
+	local repo_name="$2"
+  curl -s "https://api.github.com/repos/$repo_woner/$repo_name/releases/latest" |
+  grep '"tag_name":' |
+  sed -E 's/.*"([^"]+)".*/\1/'
+}
+
 questions() {
 	banner
 	echo 
@@ -58,9 +66,9 @@ questions() {
     echo "${Y}7. Alpine"${W}
 	echo
 	read -p "${Y}select a distro: "${W} answer_distro
-	echo
-    banner
-    read -p "${R} [${W}-${R}]${Y}Do you want to setup termux-x11(Recommended)(y/n) "${W} tx11_answer
+	answer_distro="${answer_distro:-1}"
+    echo "${R}[${W}-${R}]${G}Continuing with answer: $answer_distro"${W}
+    sleep 0.2
 }
 
 basic_task() {
@@ -101,13 +109,22 @@ install_distro() {
 }
 
 setup_tx11() {
-    if [ "$tx11_answer" == "y" ]; then
     banner
     echo "${G}Setup Termux:X11 "${W}
     echo
     package_install_and_check "x11-repo termux-x11-nightly"
-    sed -i 's/tx11_setup_answer/y/g' $HOME/gnome-installer.sh
-    fi
+    local repo_owner="termux"
+    local repo_name="termux-x11"
+    local latest_tag
+    latest_tag=$(get_latest_release "$repo_owner" "$repo_name")
+    local termux_x11_url="https://github.com/$repo_owner/$repo_name/releases/download/$latest_tag/"
+    local assets
+    assets=$(curl -s "https://api.github.com/repos/$repo_owner/$repo_name/releases/latest" | grep -oP '(?<="name": ")[^"]*')
+    deb_assets=$(echo "$assets" | grep termux-x11.*all.deb)
+    wget -O $current_path/termux-x11.deb $termux_x11_url/$deb_assets
+    apt install $current_path/termux-x11.deb -y
+    rm $current_path/termux-x11.deb
+    sed -i '12s/^#//' $HOME/.termux/termux.properties
 }
 
 setup_installer() {
@@ -115,68 +132,57 @@ setup_installer() {
     distro_path="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs"
     echo "${G} Setup Installer... "${W}
     cd ~
-    setup_tx11
     if [[ ${answer_distro} == "1" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/debian/root
     proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "2" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/ubuntu/root
     proot-distro login ubuntu -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "3" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/kali/root
     proot-distro login kali -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "4" ]]; then
-    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-pardus-desktop
     setup_tx11
     mv gnome-installer.sh $distro_path/pardus/root
     proot-distro login pardus -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "5" ]]; then
-    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-arch-gnome-desktop
-    banner
-    echo "${C} Because arch gnome desktop don't work with vnc so you have to use termux:x11"${W}
-    sleep 3
-    echo "${G}Setup Termux:X11 "${W}
-    echo
-    package_install_and_check "x11-repo termux-x11-nightly"
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-arch-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/archlinux/root
     proot-distro login archlinux -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "6" ]]; then
-    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-fedora-gnome-desktop
-    banner
-    echo "${C} Because fedora gnome desktop don't work with vnc so you have to use termux:x11"${W}
-    sleep 3
-    echo "${G}Setup Termux:X11 "${W}
-    echo
-    package_install_and_check "x11-repo termux-x11-nightly"
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-fedora-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/fedora/root
     proot-distro login fedora -- /bin/sh -c 'bash gnome-installer.sh'
 
     elif [[ ${answer_distro} == "7" ]]; then
-    wget $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-alpine-gnome-desktop
-    banner
-    echo "${C} Because alpine gnome desktop don't work with vnc so you have to use termux:x11"${W}
-    sleep 3
-    echo "${G}Setup Termux:X11 "${W}
-    echo
-    package_install_and_check "x11-repo termux-x11-nightly"
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-alpine-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/alpine/root
     proot-distro login alpine -- /bin/sh -c 'bash gnome-installer.sh'
 
     else
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
+    setup_tx11
     mv gnome-installer.sh $distro_path/debian/root
     proot-distro login debian -- /bin/sh -c 'bash gnome-installer.sh'
     fi
 }
 
+current_path=$(pwd)
 questions
 basic_task
 install_distro

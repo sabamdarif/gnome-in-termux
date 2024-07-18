@@ -59,11 +59,21 @@ function questions() {
 	echo "${Y}3. firefox & chromium (both)"${W}
 	echo
 	read -p "${Y}select an option (Default 1): "${W} answer_browser
+    answer_browser=${answer_browser:-1} 
+	echo
+	echo "${R}[${W}-${R}]${G}Continuing with answer: $answer_browser"${W}
+	sleep 0.2
 	banner
 	read -p "${R} [${W}-${R}]${Y}Do you want to install VLC (y/n) "${W} vlc_answer
+    vlc_answer=${vlc_answer:-y} 
+	echo
+	echo "${R}[${W}-${R}]${G}Continuing with answer: $vlc_answer"${W}
+	sleep 0.2
     banner
     read -p "${R} [${W}-${R}]${Y}Do you want to create a normal user account (y/n) "${W} useradd_answer
     useradd_answer="${useradd_answer:-y}"
+    echo "${R}[${W}-${R}]${G}Continuing with answer: $useradd_answer"${W}
+    sleep 0.2
     banner
     if [[ "$useradd_answer" == "n" ]]; then
     banner
@@ -111,59 +121,55 @@ function update_sys() {
 }
 
 function setup_tx11() {
-    tx11_answer="tx11_setup_answer"
-    if [ "$useradd_answer" = "y" ]; then
+    if [ "$useradd_answer" == "y" ]; then
     final_user="$user_name"
     else
     final_user="root"
     fi
-    if [ "$tx11_answer" == "y" ]; then
 cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
-session_dir="$HOME/.cache/sessions"
+
+session_dir="\$HOME/.cache/sessions"
 if [ -d "\$session_dir" ]; then
     files_to_remove=\$(find "\$session_dir" -type f -name 'x*')
     if [ -n "\$files_to_remove" ]; then
-        rm "\$session_dir"/x*
+        rm "\$session_dir"/x* > /dev/null 2>&1
     fi
 fi
-if [ "\$1" = "-tx11" ]; then
-    pkill -f com.termux.x11
-termux-x11 :0 >/dev/null &
-sleep 3
-am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
-sleep 1
-proot-distro login $ID --user $final_user --shared-tmp -- /bin/bash -c "sudo service dbus start && export XDG_CURRENT_DESKTOP="GNOME" && env DISPLAY=:0 gnome-shell --x11"
-exit 0
-fi
-EOF
-fi
-}
-
-function login() {
-	banner
-	if [ "$useradd_answer" = "y" ]; then
-	useradd -m -s $(which bash) ${user_name}
-    echo "${user_name}:${pass}" | chpasswd
-	apt install sudo -y
-	echo "$user_name ALL=(ALL:ALL) ALL" >> /etc/sudoers
-fi
-cat <<EOF >> "/data/data/com.termux/files/usr/bin/$ID"
 if [ "\$1" = "-remove" ]; then
     proot-distro remove $ID
 	rm /data/data/com.termux/files/home/.${ID}-sound-service
 	rm \$PREFIX/bin/$ID
 elif [ "\$1" = "-r" ]; then
     proot-distro login $ID
-elif [ "\$1" = "-vncstart" ]; then
-    proot-distro login --user "$final_user" $ID -- /bin/bash -c 'vncstart'
-elif [ "\$1" = "-vncstop" ]; then
-    proot-distro login --user "$final_user" $ID -- /bin/bash -c 'vncstop'
+elif [ "\$1" = "-tx11" ]; then
+    pkill -f com.termux.x11 2>/dev/null
+termux-x11 :0 >/dev/null &
+sleep 3
+am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity > /dev/null 2>&1
+sleep 1
+proot-distro login $ID --user $final_user --shared-tmp -- /bin/bash -c "sudo service dbus start && export XDG_CURRENT_DESKTOP="GNOME" && env DISPLAY=:0 gnome-shell --x11"
+exit 0
 else
     proot-distro login --user $final_user $ID
 fi
 EOF
-chmod +x /data/data/com.termux/files/usr/bin/$ID 
-    clear   
+echo -e "${R} [${W}-${R}]${C} Fixing Login Issue.."${W}
+   for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
+   done
+}
+
+
+function login() {
+	banner
+	if [ "$useradd_answer" == "y" ]; then
+    groupadd storage
+    groupadd wheel
+	useradd -m -g users -s $(which bash) ${user_name}
+    usermod -aG wheel,polkitd,audio,video,storage ${user_name}
+    echo "${user_name}:${pass}" | chpasswd
+	apt install sudo -y
+    echo "$user_name ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
+fi   
 }
 
 function vlc_installer() {
@@ -222,75 +228,12 @@ function package() {
 	banner
     echo -e "${R} [${W}-${R}]${C} Checking required packages..."${W}
     apt update
-    package_install_and_check "sudo nano wget software-properties-common gnupg2 tigervnc-standalone-server tigervnc-tools dbus-x11"
+    package_install_and_check "sudo nano wget software-properties-common gnupg2 dbus-x11"
 }
 
 function install_desktop() {
     banner
     install_gnome_core
-} 
-function vncstop() {
- if [[ -e "/bin/vncstop" ]]; then
-        rm -rf /bin/vncstop
-    fi
-    cat <<EOF > "/bin/vncstop"
-#!/usr/bin/env bash
-if [ "\$1" == "-f" ]; then
-    pkill Xtigervnc
-else
-    vncserver -kill :*
-fi
-rm -rf /.vnc/localhost:*.pid
-rm -rf /tmp/.X1-lock
-rm -rf /tmp/.X11-unix/X1
-EOF
-chmod +x /bin/vncstop
-}
-
-function vncstart() {
-	if [[ -e "/bin/vncstart" ]]; then
-        rm -rf /bin/vncstart
-    fi
-	 cat <<EOF > "/bin/vncstart"
-#!/usr/bin/env bash
-sudo service dbus start
-vncserver -geometry 2580x1080
-EOF
-    chmod +x /bin/vncstart
-}
-
-function vnc() {
-banner
-   echo -e "${R} [${W}-${R}]${G} Setting up VNC Server..."${W}
- if [[ ! -d "$HOME/.vnc" ]]; then
-    mkdir -p "$HOME/.vnc"
-fi
-
-if [[ -e "$HOME/.vnc/xstartup" ]]; then
-    rm "$HOME/.vnc/xstartup"
-fi
-
-touch "$HOME/.vnc/xstartup"
-cat << EOF >> "$HOME/.vnc/xstartup"
-export XDG_CURRENT_DESKTOP="GNOME"
-gnome-shell --x11
-EOF
-
-chmod +x "$HOME/.vnc/xstartup"
-
-if [ "$useradd_answer" == "y" ]; then
-if [[ ! -d "/home/$user_name/.vnc" ]]; then
-    mkdir -p "/home/$user_name/.vnc"
-fi
-cp $HOME/.vnc/xstartup /home/$user_name/.vnc/
-chmod +x /home/$user_name/.vnc/xstartup
-echo "$user_name ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" | sudo tee -a /etc/sudoers
-fi
-vncstart
-vncstop
- echo -e "${R} [${W}-${R}]${C} Fixing Vnc Login Issue.."${W}
-   for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
-   done
 }
 
 function add_sound() {
@@ -399,7 +342,6 @@ login
 install_desktop
 browser_installer
 vlc_installer
-vnc
 add_sound
 check_install
 note
