@@ -30,7 +30,7 @@
     ```
    - Now Select **CORE** Or **FULL(recomended)**
        <details>
-       <summary><b><code>DEMO IMAGES: </code></b></summary>
+       <summary><b>DEMO IMAGES:</b></summary>
 
        |CORE|FULL|
        |--|--|
@@ -38,6 +38,60 @@
       </details>
 5. Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better then VNC)
 6. Enjoy :smile:
+
+### How To Setup Vnc:
+
+<details>
+       <summary><b>Setup Vnc: </b></summary>
+       <b>For Debian Based Distro</b>
+
+      sudo apt install  tigervnc-standalone-server tigervnc-tools -y
+<br>
+
+      mkdir -p "$HOME/.vnc"
+<br>
+
+      nano $HOME/.vnc/xstartup
+<br>
+
+      export XDG_CURRENT_DESKTOP="GNOME"
+      gnome-shell --x11
+<br>
+     
+      chmod +x "$HOME/.vnc/xstartup"
+<br>
+      
+      sudo echo "$YOUR_USER_NAME ALL=(ALL) NOPASSWD: /usr/sbin/service dbus start" | sudo tee -a /etc/sudoers
+<br>
+      
+      sudo nano /bin/vncstart
+<br>
+      
+      #!/usr/bin/env bash
+      sudo service dbus start
+      vncserver -geometry 2580x1080 #Add your screen size
+<br>
+      
+      sudo chmod +x /bin/vncstart
+<br>
+      
+      sudo nano /bin/vncstop
+<br>
+      
+      #!/usr/bin/env bash
+      if [ "\$1" == "-f" ]; then
+      pkill Xtigervnc
+      else
+      vncserver -kill :*
+      fi
+      rm -rf /.vnc/localhost:*.pid
+      rm -rf /tmp/.X1-lock
+      rm -rf /tmp/.X11-unix/X1
+<br>
+      
+      sudo chmod +x /bin/vncstop
+       
+</details>
 
 ### NOTE:
 
