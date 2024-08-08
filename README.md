@@ -20,6 +20,10 @@
 - :hammer: Gnome Software Preinstalled (working)
 - :books: And Much More
 
+> ***This is just for test so don't think everything will work***
+
+> ***If one distro don't work so try another one***
+
 ### Installation:
 1. If you are using android 12 or higher then first disable phantom process killer [Tutorial](https://termux.xyz/how-to-fix-termux-error-process-completed-signal-9-press-enter/)
 2. Install [Termux](https://termux.com) apk from [HERE](https://f-droid.org/en/packages/com.termux/)

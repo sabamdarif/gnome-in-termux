@@ -57,13 +57,15 @@ questions() {
 	echo
     echo "${Y}3. Kali"${W}
     echo
-    echo "${Y}4. Pardus (bad support)"${W}
+    echo "${Y}4. Pardus (bad supported)"${W}
 	echo
     echo "${Y}5. Arch"${W}
 	echo
     echo "${Y}6. Fedora"${W}
 	echo
     echo "${Y}7. Alpine"${W}
+	echo
+    echo "${Y}8. Manjaro"${W}
 	echo
 	read -p "${Y}select a distro: "${W} answer_distro
 	answer_distro="${answer_distro:-1}"
@@ -114,6 +116,8 @@ install_distro() {
         proot-distro install fedora
     elif [[ ${answer_distro} == "7" ]]; then
         proot-distro install alpine
+    elif [[ ${answer_distro} == "8" ]]; then
+        proot-distro install manjaro
     else
         proot-distro install debian
     fi
@@ -184,6 +188,12 @@ setup_installer() {
     setup_tx11
     mv gnome-installer.sh $distro_path/alpine/root
     proot-distro login alpine -- /bin/sh -c 'bash gnome-installer.sh'
+
+    elif [[ ${answer_distro} == "8" ]]; then
+    wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-manjaro-gnome-desktop
+    setup_tx11
+    mv gnome-installer.sh $distro_path/manjaro/root
+    proot-distro login manjaro -- /bin/sh -c 'bash gnome-installer.sh'
 
     else
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-gnome-desktop
