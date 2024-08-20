@@ -153,6 +153,7 @@ else
     proot-distro login --user $final_user $ID
 fi
 EOF
+chmod +x /data/data/com.termux/files/usr/bin/$ID
 echo -e "${R} [${W}-${R}]${C} Fixing Login Issue.."${W}
    for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
    done

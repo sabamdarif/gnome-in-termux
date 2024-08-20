@@ -44,9 +44,10 @@
 6. Enjoy :smile:
 
 ### How To Setup Vnc:
+> If it doesn't work, then don't ask me because it didn’t work for me either
 
 <details>
-       <summary><b>Setup Vnc: </b></summary>
+       <summary><b>vnc setup steps: </b></summary>
        <b>For Debian Based Distro</b>
 
       sudo apt install  tigervnc-standalone-server tigervnc-tools -y
@@ -59,7 +60,7 @@
 <br>
 
       export XDG_CURRENT_DESKTOP="GNOME"
-      gnome-shell --x11
+      gnome-shell --x11 # paste it inside xstartup file
 <br>
      
       chmod +x "$HOME/.vnc/xstartup"
@@ -109,7 +110,7 @@
 ### Warning: 
 - *In future if you upgarde the system the desktop will fail to launch.*
   #### Fix:
-  - **First stop gui and relogin into your distro**
+  - **First stop gui and relogin into your distro cli**
   - **Then run the below command inside your distro then start gui again**
 ```
 for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file
