@@ -180,6 +180,7 @@ setup_installer() {
     elif [[ ${answer_distro} == "6" ]]; then
     wget -O $HOME/gnome-installer.sh https://raw.githubusercontent.com/sabamdarif/gnome-in-termux/main/install-fedora-gnome-desktop
     setup_tx11
+    chmod -R +w $distro_path/fedora
     mv gnome-installer.sh $distro_path/fedora/root
     proot-distro login fedora -- /bin/sh -c 'bash gnome-installer.sh'
 
