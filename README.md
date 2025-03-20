@@ -40,7 +40,7 @@
        |--|--|
        |![img](/images/core-gnome.png)|![img](/images/full-gnome.png)|
       </details>
-5. Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better then VNC)
+5. Use [Termux:x11](https://github.com/termux/termux-x11/releases) (Better than VNC)
 6. Enjoy :smile:
 
 ### How To Setup Vnc:
